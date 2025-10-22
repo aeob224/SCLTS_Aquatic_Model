@@ -53,7 +53,7 @@ summary(model.avg(ModelAvg, subset = delta <= 2))
 
 ##Model-averaged coefficients:  
 ##(full average) 
-##Estimate Std. Error Adjusted SE z value Pr(>|z|)  
+##                            Estimate Std. Error Adjusted SE z value Pr(>|z|)  
 ##(Intercept)              -7.556e-01  9.508e-01   9.564e-01   0.790   0.4295  
 ##azolla_presence_absence1 -3.609e-01  1.765e-01   1.782e-01   2.026   0.0428 *
 ##depth                    -2.776e-03  1.937e-03   1.950e-03   1.424   0.1545  
@@ -81,6 +81,35 @@ vif(TopModel)
 r.squaredGLMM(TopModel)
 
 
+##Out of the variables above, only azolla, depth, and distance to nearest breeding pond have p < 0.157.
+##Drop all other variables as thy are potentially pretending.
+options(na.action = "na.fail")
+
+##create a global model
+global.model <- lmer(log_larv_dens ~ depth  + log_dist_to_breed + azolla_presence_absence + 
+                       (1|pond), REML = FALSE, data = df)
+
+##Generate all model combinations
+all_possible_models_no_pretenders <- dredge(global.model)
+all_possible_models_no_pretenders
+
+##This identifies the top models with delta AIC <= 2
+##May be useful for model averaging
+subset(all_possible_models_no_pretenders, delta <= 2)
+
+##Model Averaging
+ModelAvg_no_pretenders <- model.avg(all_possible_models_no_pretenders, subset = delta <= 2)
+summary(ModelAvg_no_pretenders)
+
+##Model-averaged coefficients:  
+##(full average) 
+##                          Estimate Std. Error Adjusted SE z value Pr(>|z|)
+##(Intercept)              -0.196175   0.734275    0.738681   0.266    0.791
+##azolla_presence_absence1 -0.329200   0.208910    0.210067   1.567    0.117
+##log_dist_to_breed        -0.400706   0.258803    0.260504   1.538    0.124
+##depth                    -0.001326   0.001796    0.001804   0.735    0.462
+ 
+##################################################################################################################
 
 
 
@@ -88,7 +117,7 @@ r.squaredGLMM(TopModel)
 
 
 
-#Model selection and averaging without Azolla ################################################
+#Model selection and averaging without Azolla #############################################################
 options(na.action = "na.fail")
 
 ##create a global model
@@ -149,6 +178,44 @@ r.squaredGLMM(TopModelNoAzolla)
 
 
 
+##Eliminating pretending variables in the No Azolla process.
+##Kept depth, distance to breeding pond, and salinity as they had p values less than 0.157
+global.model <- lmer(log_larv_dens ~ depth + log_salinity + log_dist_to_breed +(1|pond), 
+                     REML = FALSE, data = df)
+
+##Generate all model combinations
+all_possible_models_no_azolla_no_pretending <- dredge(global.model)
+all_possible_models_no_azolla_no_pretending
+
+##This identifies the top models with delta AIC <= 2
+##May be useful for model averaging
+subset(all_possible_models_no_azolla_no_pretending, delta <= 2)
+##2 Models
+##Depth: 2
+##Distance to Nearest Breeding Pond: 2
+##Salinity: 1
+
+##Model Averaging
+ModelAvgNoAzolla_no_pretending <- model.avg(all_possible_models_no_azolla_no_pretending, subset = delta <= 2)
+summary(ModelAvgNoAzolla_no_pretending)
+
+#############################################################################################################
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #Now I am trying the initial work, but I include year as a fixed effect. ############################################################
 #Previously year had been included as a random effect, but this was producing errors.
@@ -195,7 +262,7 @@ ggplot(data = df,
   
 Anova(yearLM)
 
-#Does not appear that year needs to be included in these models.
+#Does not appear that year needs to be included in these models.#################################################
 
 
 
@@ -207,11 +274,8 @@ Anova(yearLM)
 
 
 
-# Testing for pretending variables ####################################################
+# Ranking variables by importance on the Azolla selection process ####################################################
 # I am concerned that the initial work may be including pretending variables. 
-# Here I try two approaches for rooting out pretending variables.
-
-## Approach 1: Sum the Akaike model weights for the models in which a specific variable appears.
 ## Variables with lower sum Akaike model weights are more likely to be pretending.
 
 ## Calculates the sum akaike weights for each variable
@@ -223,26 +287,20 @@ weights$variable <- c("Azolla", "Distance to Breeding Pond", "Depth", "Emergent 
                           "Turbidity")
 weights <- as.data.frame(sum_weights)
 
-ggplot(weights,
-       aes(x = sum_weights, y = variable)) +
-  geom_bar(stat = "identity")
-
 
 ggplot(weights,
        aes(x = sum_weights, y = reorder(variable, sum_weights))) +
   geom_bar(stat = "identity")+
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")
+############################################################################
 
 
 
 
 
 
-
-
-
-#
+#Ranking variables by importance in the no Azolla model selection process ##################################
 sum_weightsNoAzolla <- sw(all_possible_models_no_azolla)
 weightsNoAzolla <- as.data.frame(sum_weightsNoAzolla)
 
@@ -261,5 +319,5 @@ ggplot(weightsNoAzolla,
   geom_bar(stat = "identity")+
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")
-
+#########################################################################################
 
