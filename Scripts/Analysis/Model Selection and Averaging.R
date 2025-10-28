@@ -81,6 +81,8 @@ vif(TopModel)
 r.squaredGLMM(TopModel)
 
 
+
+
 ##Out of the variables above, only azolla, depth, and distance to nearest breeding pond have p < 0.157.
 ##Drop all other variables as thy are potentially pretending.
 options(na.action = "na.fail")
@@ -97,7 +99,7 @@ all_possible_models_no_pretenders
 ##May be useful for model averaging
 subset(all_possible_models_no_pretenders, delta <= 2)
 
-##Model Averaging
+##Model Averaging delta AICc <=2
 ModelAvg_no_pretenders <- model.avg(all_possible_models_no_pretenders, subset = delta <= 2)
 summary(ModelAvg_no_pretenders)
 
@@ -109,15 +111,17 @@ summary(ModelAvg_no_pretenders)
 ##log_dist_to_breed        -0.400706   0.258803    0.260504   1.538    0.124
 ##depth                    -0.001326   0.001796    0.001804   0.735    0.462
  
+
+## Model average with 95% cumulative weights
+ModelAvg_no_pretenders_95 <- model.avg(all_possible_models_no_pretenders, subset = cumsum(weight) <= 0.95)
+summary(ModelAvg_no_pretenders_95)
+
 ##################################################################################################################
 
 
 
 
-
-
-
-#Model selection and averaging without Azolla #############################################################
+#Model selection and averaging without Azolla ####################################################################
 options(na.action = "na.fail")
 
 ##create a global model
@@ -195,9 +199,15 @@ subset(all_possible_models_no_azolla_no_pretending, delta <= 2)
 ##Distance to Nearest Breeding Pond: 2
 ##Salinity: 1
 
-##Model Averaging
+##Model Averaging using delta AICc
 ModelAvgNoAzolla_no_pretending <- model.avg(all_possible_models_no_azolla_no_pretending, subset = delta <= 2)
 summary(ModelAvgNoAzolla_no_pretending)
+
+
+##Model averaging using 95% cumulative weights
+ModelAvgNoAzolla_no_pretending_95 <- model.avg(all_possible_models_no_azolla_no_pretending, subset = cumsum(weight) <= 0.95)
+summary(ModelAvgNoAzolla_no_pretending_95)
+
 
 #############################################################################################################
 
