@@ -37,12 +37,12 @@ all_possible_models
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models, delta <= 2)
-##26 Models
-##Azolla: 25
-##Depth: 21
+##24 Models
+##Azolla: 23
+##Depth: 19
 ##Distance to Nearest Breeding Pond: 21
-##Salinity: 19
-##Emergent Vegetation: 18
+##Salinity: 18
+##Emergent Vegetation: 17
 ##Vertebrate Predators: 17
 
 
@@ -291,18 +291,23 @@ Anova(yearLM)
 ## Calculates the sum akaike weights for each variable
 sum_weights <- sw(all_possible_models)
 
+weights <- as.data.frame(sum_weights)
+
 weights$variable <- c("Azolla", "Distance to Breeding Pond", "Depth", "Emergent Vegetation",
                           "Salinity", "Vertebrate Predators", "Invertebrate Predators", "Large Prey",
                           "Water Temp", "Suitable 598m", "Chlorophyll","Suitable 598m Split",
                           "Turbidity")
-weights <- as.data.frame(sum_weights)
 
-
+##Plot cumulative akaike weights for each variables
 ggplot(weights,
-       aes(x = sum_weights, y = reorder(variable, sum_weights))) +
+       aes(x = sum_weights,
+           y = reorder(variable, sum_weights))) +
   geom_bar(stat = "identity")+
   xlab("Sum Akaike Model Weights")+
-  ylab("Predictor")
+  ylab("Predictor")+
+  labs(title = "Sum Akaike weights for variables in models with \u0394AIC <= 2")+
+  theme_bw()
+
 ############################################################################
 
 
