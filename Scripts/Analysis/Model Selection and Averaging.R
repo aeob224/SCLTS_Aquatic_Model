@@ -305,7 +305,7 @@ ggplot(weights,
   geom_bar(stat = "identity")+
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")+
-  labs(title = "Sum Akaike weights for variables in models with \u0394AIC <= 2")+
+  labs(title = "Sum Akaike weights for variables in models with \u0394AIC \u2264 2")+
   theme_bw()
 
 ############################################################################
