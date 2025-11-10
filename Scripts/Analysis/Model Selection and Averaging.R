@@ -53,18 +53,18 @@ summary(model.avg(ModelAvg, subset = delta <= 2))
 
 ##Model-averaged coefficients:  
 ##(full average) 
-##                            Estimate Std. Error Adjusted SE z value Pr(>|z|)  
-##(Intercept)              -7.556e-01  9.508e-01   9.564e-01   0.790   0.4295  
-##azolla_presence_absence1 -3.609e-01  1.765e-01   1.782e-01   2.026   0.0428 *
-##depth                    -2.776e-03  1.937e-03   1.950e-03   1.424   0.1545  
-##log_dist_to_breed        -3.671e-01  2.526e-01   2.543e-01   1.444   0.1488  
-##log_invert_pred           4.082e-02  8.208e-02   8.243e-02   0.495   0.6204  
-##log_salinity             -3.973e-01  3.118e-01   3.135e-01   1.267   0.2050  
-##vert_pred1                2.273e-01  2.088e-01   2.099e-01   1.083   0.2787  
-##sqrt_emergent_veg         3.917e-02  3.790e-02   3.810e-02   1.028   0.3040  
-##log_large_prey            2.275e-02  7.177e-02   7.213e-02   0.315   0.7524  
-##log_water_temp            9.108e-02  4.390e-01   4.411e-01   0.206   0.8364  
-##suitable_598_split       -1.425e-08  1.139e-07   1.146e-07   0.124   0.9010  
+##                           Estimate Std. Error Adjusted SE z value Pr(>|z|)  
+##(Intercept)              -6.725e-01  9.279e-01   9.340e-01   0.720   0.4715  
+##azolla_presence_absence1 -3.592e-01  1.765e-01   1.781e-01   2.017   0.0437 *
+##depth                    -2.764e-03  1.942e-03   1.955e-03   1.414   0.1574  
+##log_dist_to_breed        -3.980e-01  2.419e-01   2.438e-01   1.633   0.1026  
+##log_invert_pred           4.741e-02  8.629e-02   8.669e-02   0.547   0.5845  
+##log_salinity             -4.118e-01  3.099e-01   3.117e-01   1.321   0.1864  
+##vert_pred1                2.663e-01  2.069e-01   2.081e-01   1.280   0.2007  
+##sqrt_emergent_veg         3.719e-02  3.720e-02   3.740e-02   0.994   0.3201  
+##log_large_prey            2.509e-02  7.489e-02   7.526e-02   0.333   0.7388  
+##log_water_temp            8.531e-02  4.259e-01   4.282e-01   0.199   0.8421  
+##suitable_598_split       -1.537e-08  1.179e-07   1.187e-07   0.130   0.8970  
 
 
 ##Here is the model if we just construct the significant terms from the model averaging
@@ -137,14 +137,14 @@ all_possible_models_no_azolla
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
 ##12 Models
-##Depth: 12
-##Distance to Nearest Breeding Pond: 12
-##Salinity: 10
-##Emergent Vegetation: 7
-##Vertebrate Predators: 7
+##Depth: 10
+##Distance to Nearest Breeding Pond: 10
+##Salinity: 8
+##Emergent Vegetation: 6
+##Vertebrate Predators: 9
 ##Invert Predators: 2
 ##Large Prey: 2
-##Water Temperature: 2
+##Water Temperature:2
 
 
 ##Model Averaging
@@ -155,15 +155,15 @@ summary(model.avg(ModelAvgNoAzolla, subset = delta <= 2))
 ##Model-averaged coefficients:  
 ##(full average) 
 ##                   Estimate Std. Error Adjusted SE z value Pr(>|z|)   
-##(Intercept)       -0.430427   1.047612    1.054594   0.408  0.68317   
-##depth             -0.004294   0.001601    0.001618   2.654  0.00795 **
-##log_dist_to_breed -0.522064   0.211755    0.214056   2.439  0.01473 * 
-##log_salinity      -0.447083   0.292446    0.294451   1.518  0.12892   
-##vert_pred1         0.290040   0.204275    0.205566   1.411  0.15826   
-##sqrt_emergent_veg  0.026947   0.034771    0.034949   0.771  0.44069   
-##log_large_prey     0.028379   0.079559    0.079929   0.355  0.72255   
-##log_water_temp     0.203901   0.646664    0.649830   0.314  0.75369   
-##log_invert_pred    0.017853   0.055600    0.055888   0.319  0.74938   
+##(Intercept)       -0.457023   1.075641    1.082769   0.422  0.67296   
+##depth             -0.004281   0.001595    0.001612   2.656  0.00791 **
+##log_dist_to_breed -0.531773   0.211097    0.213397   2.492  0.01270 * 
+##log_salinity      -0.452086   0.295541    0.297495   1.520  0.12860   
+##vert_pred1         0.340381   0.186169    0.187766   1.813  0.06986 . 
+##sqrt_emergent_veg  0.027605   0.035020    0.035199   0.784  0.43289   
+##log_large_prey     0.032647   0.084411    0.084808   0.385  0.70027   
+##log_water_temp     0.225586   0.675299    0.678679   0.332  0.73959   
+##log_invert_pred    0.020081   0.058469    0.058776   0.342  0.73261   
  
 
 ##Here is the model if we just construct the significant terms from the model averaging
@@ -184,8 +184,8 @@ r.squaredGLMM(TopModelNoAzolla)
 
 ##Eliminating pretending variables in the No Azolla process.
 ##Kept depth, distance to breeding pond, and salinity as they had p values less than 0.157
-global.model <- lmer(log_larv_dens ~ depth + log_salinity + log_dist_to_breed +(1|pond), 
-                     REML = FALSE, data = df)
+global.model <- lmer(log_larv_dens ~ depth + log_salinity + log_dist_to_breed + vert_pred +
+                       (1|pond), REML = FALSE, data = df)
 
 ##Generate all model combinations
 all_possible_models_no_azolla_no_pretending <- dredge(global.model)
@@ -194,10 +194,9 @@ all_possible_models_no_azolla_no_pretending
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla_no_pretending, delta <= 2)
-##2 Models
-##Depth: 2
-##Distance to Nearest Breeding Pond: 2
-##Salinity: 1
+##1 Model
+## All variables included
+
 
 ##Model Averaging using delta AICc
 ModelAvgNoAzolla_no_pretending <- model.avg(all_possible_models_no_azolla_no_pretending, subset = delta <= 2)
@@ -293,21 +292,28 @@ sum_weights <- sw(all_possible_models)
 
 weights <- as.data.frame(sum_weights)
 
-weights$variable <- c("Azolla", "Distance to Breeding Pond", "Depth", "Emergent Vegetation",
-                          "Salinity", "Vertebrate Predators", "Invertebrate Predators", "Large Prey",
-                          "Water Temp", "Suitable 598m", "Chlorophyll","Suitable 598m Split",
+weights$variable <- c("Azolla", "Distance to nearest breeding pond", "Depth", "Emergent vegetation",
+                          "Salinity", "Vertebrate predators", "Invertebrate predators", "Large prey",
+                          "Water temperature", "Suitable habitat within 598m", "Chlorophyll","Suitable habitat within 598m split by roads",
                           "Turbidity")
 
 ##Plot cumulative akaike weights for each variables
-ggplot(weights,
+akaike_weights <- ggplot(weights,
        aes(x = sum_weights,
            y = reorder(variable, sum_weights))) +
-  geom_bar(stat = "identity")+
+  geom_bar(stat = "identity", fill = "black")+
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")+
-  labs(title = "Sum Akaike weights for variables in models with \u0394AIC \u2264 2")+
-  theme_bw()
+  labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
+  theme_classic(base_size = 18)
 
+?ggsave
+ggsave(plot = akaike_weights,
+       filename = "akaike_weights.png",
+       path = "Figures/",
+       width = 500,
+       height = 300,
+       units = "mm")
 ############################################################################
 
 
@@ -333,6 +339,19 @@ ggplot(weightsNoAzolla,
        aes(x = sum_weightsNoAzolla, y = reorder(variable, sum_weightsNoAzolla))) +
   geom_bar(stat = "identity")+
   xlab("Sum Akaike Model Weights")+
-  ylab("Predictor")
+  ylab("Predictor")+
+  labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
+  theme_bw()
 #########################################################################################
 
+
+
+
+
+
+# Data Visualization ###########################################################
+sjPlot::plot_model(model = TopModel,
+                   show.values=TRUE, show.p=TRUE,
+                   title="Effect of Habitat Variables on SCLTS Larval Density")
+
+sjPlot:: tab_model(TopModel)
