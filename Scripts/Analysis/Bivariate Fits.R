@@ -40,23 +40,27 @@ summary(med_prey_model)
 
 #Everything Else
 ##Read data
-dat3 <- read_csv("model_data_no_ysi_or_plankton.csv")
+dat3 <- read_csv("Data/model_data_no_ysi_or_plankton.csv")
 
 #Azolla.Significant (p = 0.004)**
 azolla_model <- lmer(log_larv_dens ~ azolla_presence_absence + (1|pond), data = dat3)
 summary(azolla_model)
+anova(azolla_model)
 
 #Distance to nearest breeding pond. Significant (p = 0.017) *
 distance_model <-  lmer(log_larv_dens ~ log_dist_to_breed + (1|pond), data = dat3)
 summary(distance_model)
+anova(distance_model)
 
 ##Depth. Significant (p = 0.0233)*
 depth_model <- lmer(log_larv_dens ~ depth + (1|pond), data = dat3)
 summary(depth_model)
+anova(depth_model)
 
 #Emergent vegetation. Significant (p = 0.045)*
 emergent_veg_model <-  lmer(log_larv_dens ~ sqrt_emergent_veg + (1|pond), data = dat3)
 summary(emergent_veg_model)
+anova(emergent_veg_model)
 
 ##Suitable 598m habitat buffer split by roads. Not significant
 suitable_split_model <- lmer(log_larv_dens ~ suitable_598_split + (1|pond), data = dat3)
