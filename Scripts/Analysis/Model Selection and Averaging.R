@@ -305,14 +305,14 @@ akaike_weights <- ggplot(weights,
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")+
   labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
-  theme_classic(base_size = 18)
+  theme_classic(base_size = 32)
 
 ?ggsave
 ggsave(plot = akaike_weights,
        filename = "akaike_weights.png",
        path = "Figures/",
-       width = 500,
-       height = 300,
+       width = 700,
+       height = 350,
        units = "mm")
 ############################################################################
 
