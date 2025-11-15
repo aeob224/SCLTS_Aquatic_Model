@@ -30,12 +30,13 @@ global.model <- lmer(log_larv_dens ~ depth + suitable_598_split + suitable_598 +
                        + log_water_temp + log_salinity + log_turbidity + log_dist_to_breed + sqrt_chlorophyll + 
                        sqrt_emergent_veg + azolla_presence_absence + (1|pond), REML = FALSE, data = df)
 
-##Generate all model combinations
+## Generate all model combinations
+## This will take a few minutes to run
 all_possible_models <- dredge(global.model)
 all_possible_models
 
-##This identifies the top models with delta AIC <= 2
-##May be useful for model averaging
+## This identifies the top models with delta AIC <= 2
+## May be useful for model averaging
 subset(all_possible_models, delta <= 2)
 ##24 Models
 ##Azolla: 23
@@ -307,7 +308,6 @@ akaike_weights <- ggplot(weights,
   labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
   theme_classic(base_size = 32)
 
-?ggsave
 ggsave(plot = akaike_weights,
        filename = "akaike_weights.png",
        path = "Figures/",
