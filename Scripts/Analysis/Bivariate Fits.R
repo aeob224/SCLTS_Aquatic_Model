@@ -4,7 +4,10 @@
 library(lme4)
 library(lmerTest)
 library(tidyverse)
+library(broom.mixed)
 
+
+# Bivariate linear fits ########################################################
 #YSI Fits (pH, DO, nitrates)
 dat1 <- read_csv("Data/model_data_with_ysi.csv")
 
@@ -41,6 +44,9 @@ summary(med_prey_model)
 #Everything Else
 ##Read data
 dat3 <- read_csv("Data/model_data_no_ysi_or_plankton.csv")
+
+dat3$vert_pred <- as.character(dat3$vert_pred)
+dat3$azolla_presence_absence <- as.character(dat3$azolla_presence_absence)
 
 #Azolla.Significant (p = 0.004)**
 azolla_model <- lmer(log_larv_dens ~ azolla_presence_absence + (1|pond), data = dat3)
@@ -99,6 +105,7 @@ chlorophyll_model <- lmer(log_larv_dens ~ sqrt_chlorophyll + (1|pond), data = da
 summary(chlorophyll_model)
 
 
+################################################################################
 
 
 
@@ -108,8 +115,8 @@ summary(chlorophyll_model)
 
 
 
+# Quadratic Fits ###############################################################
 
-#Now testing quadratic terms
 #YSI Fits (pH, DO, nitrates)
 
 ##pH model. Not significant
@@ -128,7 +135,7 @@ summary(nitrate_model_quadratic)
 
 
 
-#Plankton Fits
+#Plankton Quadratic Fits
 
 ##Plankton model. Not significant
 plankton_model_quadratic <- lmer(log_larv_dens ~ poly(log_plankton,2) + (1|pond), data = dat2)
@@ -186,6 +193,79 @@ summary(turbidity_model_quadratic)
 chlorophyll_model_quadratic <- lmer(log_larv_dens ~ poly(sqrt_chlorophyll,2) + (1|pond), data = dat3)
 summary(chlorophyll_model_quadratic)
 
+################################################################################
+
+
+
+# NOTE ON FOLLOWING SECTION###################
+## Investigate the .fitted vs .fixed value as a response variable in these plots##
+
+
+
+
+
+
+
+# Visualizing the four significant bivariate fits ##############################
+
+## Depth model
+### This code modifies the original model into a tidy format
+tidy_depth <- augment(depth_model)
+
+### This plots the actual datapoints but fits a line to the predicted effects
+ggplot(data = tidy_depth,
+       mapping = aes(x = depth,
+                     y = .fixed))+
+  geom_smooth(method = "lm", level = 0.95)+
+  geom_point(mapping = aes(x = depth,
+                           y = log_larv_dens))+
+  labs(x = "Pond Depth (cm)",
+       y = "Predicted log-Larval Density") +
+  theme_classic()
+
+
+## Distance Model
+tidy_distance <- augment(distance_model)
+
+### This plots the actual datapoints but fits a line to the predicted effects
+ggplot(data = tidy_distance,
+       mapping = aes(x = log_dist_to_breed,
+                     y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95)+
+  geom_point(mapping = aes(x = log_dist_to_breed,
+                           y = log_larv_dens)) +
+  labs(x = "log-Distance to Nearest Breeding Pond",
+       y = "Predicted log-Larval Density") +
+  theme_classic()
+
+
+##Emergent Vegetation Model
+tidy_veg <- augment(emergent_veg_model)
+
+### This plots the actual datapoints but fits a line to the predicted response
+ggplot(data = tidy_veg,
+       mapping = aes(x = sqrt_emergent_veg,
+                     y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95)+
+  geom_point(mapping = aes(x = sqrt_emergent_veg,
+                           y = log_larv_dens)) +
+  labs(x = "Square Root of the Percent of Pond Surface with Emergent Vegetation",
+       y = "Predicted log-Larval Density") +
+  theme_classic()
+ 
+
+
+## Azolla model
+tidy_azolla <- augment(azolla_model)
+
+## Boxplot of azolla model predictions. Still uses fits rather than fixed.
+## Note, right now the points being displayed are predictions rather than the actual values
+ggplot(data = tidy_azolla, aes(x = azolla_presence_absence, y = .fitted)) + 
+  geom_boxplot() +
+  geom_jitter() +
+  theme_classic()+
+  labs(x = "Azolla Present or Absent",
+       y = "log-Predicted Larval Density")
 
 
 
