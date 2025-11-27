@@ -2,7 +2,6 @@
 
 #Load Packages
 library(lme4)
-library(lmerTest)
 library(tidyverse)
 library(broom.mixed)
 
@@ -213,9 +212,9 @@ summary(chlorophyll_model_quadratic)
 tidy_depth <- augment(depth_model)
 
 ### This plots the actual datapoints but fits a line to the predicted effects
-ggplot(data = tidy_depth,
+depth_plot <- ggplot(data = tidy_depth,
        mapping = aes(x = depth,
-                     y = .fixed))+
+                     y = .fitted))+
   geom_smooth(method = "lm", level = 0.95)+
   geom_point(mapping = aes(x = depth,
                            y = log_larv_dens))+
@@ -228,7 +227,7 @@ ggplot(data = tidy_depth,
 tidy_distance <- augment(distance_model)
 
 ### This plots the actual datapoints but fits a line to the predicted effects
-ggplot(data = tidy_distance,
+distance_plot <- ggplot(data = tidy_distance,
        mapping = aes(x = log_dist_to_breed,
                      y = .fitted))+
   geom_smooth(method = "lm", level = 0.95)+
@@ -243,7 +242,7 @@ ggplot(data = tidy_distance,
 tidy_veg <- augment(emergent_veg_model)
 
 ### This plots the actual datapoints but fits a line to the predicted response
-ggplot(data = tidy_veg,
+veg_plot <- ggplot(data = tidy_veg,
        mapping = aes(x = sqrt_emergent_veg,
                      y = .fitted))+
   geom_smooth(method = "lm", level = 0.95)+
@@ -260,7 +259,7 @@ tidy_azolla <- augment(azolla_model)
 
 ## Boxplot of azolla model predictions. Still uses fits rather than fixed.
 ## Note, right now the points being displayed are predictions rather than the actual values
-ggplot(data = tidy_azolla, aes(x = azolla_presence_absence, y = .fitted)) + 
+azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla_presence_absence, y = .fitted)) + 
   geom_boxplot() +
   geom_jitter() +
   theme_classic()+
@@ -269,5 +268,5 @@ ggplot(data = tidy_azolla, aes(x = azolla_presence_absence, y = .fitted)) +
 
 
 
-
-
+multiPlot <- cowplot::plot_grid(azolla_plot, veg_plot, depth_plot, distance_plot)
+ggsave("Figures/bivariate_fits.png", multiPlot)
