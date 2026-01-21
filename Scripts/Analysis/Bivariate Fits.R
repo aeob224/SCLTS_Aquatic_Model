@@ -4,44 +4,38 @@
 library(lme4)
 library(tidyverse)
 library(broom.mixed)
+library(cowplot)
 
 
 ################################################################################
 # Read Data 
 ################################################################################
-data <- read_csv("Data/univariate_analysis.csv")
+data <- read_csv("Data/univariate_analysis.csv") |>
+  mutate(azolla = as.factor(azolla))
 
 
 ################################################################################
-# Generate univariate modeling functions
+# Run univariate models
 ################################################################################
 
-# Linear fit function ----------------------------------------------------------
-uni_model <- function(predictor, dat) {
+# Linear fit function generation -----------------------------------------------
+uni_model <- function(predictor, data) {
   as.numeric(predictor)
-  model <- lmer(log_larv_dens ~ predictor + (1|pond), data = dat)
-  summary(model)
+  model <- lmer(log_larv_dens ~ predictor + (1|pond), data = data)
+  print(summary(model))
+  print(anova(model))
 }
 
-
-# Quadratic fit function -------------------------------------------------------
-quad_model <- function(predictor, dat) {
-  as.numeric(predictor)
-  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = dat, na.action = na.exclude)
-  summary(model)
-}
-
-# Quadratic code needs a mutate the dataset to remove NA values
+# Run Models -------------------------------------------------------------------
 
 
+# Azolla (p = 0.008)**
+uni_model(data$azolla, data)
 
-################################################################################
-# Run models
-################################################################################
 # Depth  (p = 0.087)
-uni_model(data$depth ,dat = data)
+uni_model(data$depth, dat = data)
 
-# Distance to nearest breeding pond (p = 0.005)*
+# Distance to nearest breeding pond (p = 0.005)**
 uni_model(data$log_dist_to_breed, dat = data)
 
 # Emergent vegetation (p = 0.075)
@@ -80,8 +74,12 @@ uni_model(data$log_turbidity, dat = data)
 # Chlorophyll (p = 0.698)
 uni_model(data$sqrt_chlorophyll, dat = data)
 
-# Azolla NEED TO DO
+#Suitable 598 (p = 0.365)
+uni_model(data$suitable_598, dat = data)
 
+
+#Suitable 598 split (p = 0.413)
+uni_model(data$suitable_598_split, dat = data)
 
 ################################################################################
 
@@ -92,283 +90,134 @@ uni_model(data$sqrt_chlorophyll, dat = data)
 # Quadratic Models
 ################################################################################
 
-# Depth  (p = 0.087)
-quad_model(data$depth ,dat = data)
-
-# Distance to nearest breeding pond (p = 0.005)*
-quad_model(data$log_dist_to_breed, dat = data)
-
-# Emergent vegetation (p = 0.075)
-quad_model(data$sqrt_emergent_veg, dat = data)
-
-# Medium Prey (p = 0.065)
-uni_model(data$log_med_prey, dat = data)
-
-# Large Prey (p = 0.701)
-uni_model(data$log_large_prey, dat = data)
-
-# Invert Pred (p = 0.653)
-uni_model(data$log_invert_pred, dat = data)
-
-# Plankton (p = 0.459)
-uni_model(data$log_plankton, dat = data)
-
-# Water Temp (p = 0.807)
-uni_model(data$log_water_temp, dat = data)
-
-# DO (p = 0.093)
-uni_model(data$log_DO, dat = data)
-
-# Nitrates (p = 0.415)
-uni_model(data$log_nitrates, dat = data)
-
-# pH (p = 0.529)
-uni_model(data$log_pH, dat = data)
-
-# Salinity (p = 0.023)*
-uni_model(data$log_salinity, dat = data)
-
-# Turbidity (p = 0.549)
-uni_model(data$log_turbidity, dat = data)
-
-# Chlorophyll (p = 0.698)
-uni_model(data$sqrt_chlorophyll, dat = data)
-
-# Azolla NEED TO DO
+# Quadratic Model function generation ------------------------------------------
+quad_model <- function(predictor, data) {
+  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = data)
+  summary(model)
+}
 
 
+# Depth
+dat <- data |>
+  select(depth, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$depth, dat)
 
 
+# Distance to nearest breeding pond
+dat <- data |>
+  select(log_dist_to_breed, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_dist_to_breed, dat)
 
 
+# Emergent vegetation
+dat <- data |>
+  select(sqrt_emergent_veg, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$sqrt_emergent_veg, dat)
 
 
+# Medium Prey
+dat <- data |>
+  select(log_med_prey, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_med_prey, dat)
 
 
+# Large Prey
+dat <- data |>
+  select(log_large_prey, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_large_prey, dat)
 
 
+# Invert Pred
+dat <- data |>
+  select(log_invert_pred, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_invert_pred, dat)
 
 
+# Plankton
+dat <- data |>
+  select(log_plankton, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_plankton, dat)
 
 
-# Bivariate linear fits ########################################################
-#YSI Fits (pH, DO, nitrates)
-dat1 <- read_csv("Data/model_data_with_ysi.csv")
+# Water Temp
+dat <- data |>
+  select(log_water_temp, log_larv_dens, pond) |>
+  drop_na()
 
-##pH model. Not significant
-ph_model <- lmer(log_larv_density ~ log_pH + (1|pond), data = dat1)
-summary(ph_model)
-
-##DO model. Not significant
-DO_model <- lmer(log_larv_density ~ log_DO + (1|pond), data = dat1)
-summary(DO_model)
+quad_model(dat$log_water_temp, dat)
 
 
-##nitrate_model. Not significant. 
-nitrate_model <- lmer(log_larv_density ~ log_nitrates + (1|pond), data = dat1)
-summary(nitrate_model)
+# DO
+dat <- data |>
+  select(log_DO, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_DO, dat)
 
 
+# Nitrates
+dat <- data |>
+  select(log_nitrates, log_larv_dens, pond) |>
+  drop_na()
 
-#Plankton Fits
-##Read data
-dat2 <- read_csv("Data/model_data_no_ysi.csv")
-
-##Plankton model. Not significant
-plankton_model <- lmer(log_larv_dens ~ log_plankton + (1|pond), data = dat2)
-summary(plankton_model)
+quad_model(dat$log_nitrates, dat)
 
 
-##Medium prey. Not significant
-med_prey_model <- lmer(log_larv_dens ~ log_medium_prey + (1|pond), data = dat2)
-summary(med_prey_model)
+# pH
+dat <- data |>
+  select(log_pH, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$log_pH, dat)
 
 
+# Salinity
+dat <- data |>
+  select(log_salinity, log_larv_dens, pond) |>
+  drop_na()
 
-#Everything Else
-##Read data
-dat3 <- read_csv("Data/model_data_no_ysi_or_plankton.csv")
+quad_model(dat$log_salinity, dat)
 
-dat3$vert_pred <- as.character(dat3$vert_pred)
-dat3$azolla_presence_absence <- as.character(dat3$azolla_presence_absence)
 
-#Azolla.Significant (p = 0.004)**
-azolla_model <- lmer(log_larv_dens ~ azolla_presence_absence + (1|pond), data = dat3)
-summary(azolla_model)
-anova(azolla_model)
+# Turbidity
+dat <- data |>
+  select(log_turbidity, log_larv_dens, pond) |>
+  drop_na()
 
-#Distance to nearest breeding pond. Significant (p = 0.017) *
-distance_model <-  lmer(log_larv_dens ~ log_dist_to_breed + (1|pond), data = dat3)
-summary(distance_model)
-anova(distance_model)
+quad_model(dat$log_turbidity, dat)
 
-##Depth. Significant (p = 0.0233)*
-depth_model <- lmer(log_larv_dens ~ depth + (1|pond), data = dat3)
-summary(depth_model)
-anova(depth_model)
 
-#Emergent vegetation. Significant (p = 0.045)*
-emergent_veg_model <-  lmer(log_larv_dens ~ sqrt_emergent_veg + (1|pond), data = dat3)
-summary(emergent_veg_model)
-anova(emergent_veg_model)
+# Chlorophyll
+dat <- data |>
+  select(sqrt_chlorophyll, log_larv_dens, pond) |>
+  drop_na()
 
-##Suitable 598m habitat buffer split by roads. Not significant
-suitable_split_model <- lmer(log_larv_dens ~ suitable_598_split + (1|pond), data = dat3)
-summary(suitable_split_model)
+quad_model(dat$sqrt_chlorophyll, dat)
 
-##Suitable habitat 598m. Not significant.
-suitable_model <- lmer(log_larv_dens ~ suitable_598 + (1|pond), data = dat3)
-summary(suitable_model)
 
-##Vertebrate predators. Not significant.
-vert_pred_model <- lmer(log_larv_dens ~ vert_pred + (1|pond), data = dat3)
-summary(vert_pred_model)
-
-##Large prey. Not significant.
-large_prey_model <- lmer(log_larv_dens ~ log_large_prey + (1|pond), data = dat3)
-summary(large_prey_model)
-
-##Invertebrate predators. Not significant.
-invert_pred_model <- lmer(log_larv_dens ~ log_invert_pred + (1|pond), data = dat3)
-summary(invert_pred_model)
-
-#Water temperature. Not significant
-temp_model <- lmer(log_larv_dens ~ log_water_temp + (1|pond), data = dat3)
-summary(temp_model)
-
-#Salinity model. Not significant.
-salinity_model <- lmer(log_larv_dens ~ log_salinity + (1|pond), data = dat3)
-summary(salinity_model)
-
-#Turbidity model. Not significant.
-turbidity_model <-  lmer(log_larv_dens ~ log_turbidity + (1|pond), data = dat3)
-summary(turbidity_model)
-
-#Chlorophyll. Not significant
-chlorophyll_model <- lmer(log_larv_dens ~ sqrt_chlorophyll + (1|pond), data = dat3)
-summary(chlorophyll_model)
 
 
 ################################################################################
-
-
-
-
-
-
-
-
-
-# Quadratic Fits ###############################################################
-
-#YSI Fits (pH, DO, nitrates)
-
-##pH model. Not significant
-ph_model_quadratic <- lmer(log_larv_density ~ poly(log_pH,2) + (1|pond), data = dat1)
-summary(ph_model_quadratic)
-
-##DO model. Not significant
-DO_model_quadratic <- lmer(log_larv_density ~ poly(log_DO,2) + (1|pond), data = dat1)
-summary(DO_model_quadratic)
-
-
-##nitrate_model. Not significant. 
-nitrate_model_quadratic <- lmer(log_larv_density ~ poly(log_nitrates,2) + (1|pond), data = dat1)
-summary(nitrate_model_quadratic)
-
-
-
-
-#Plankton Quadratic Fits
-
-##Plankton model. Not significant
-plankton_model_quadratic <- lmer(log_larv_dens ~ poly(log_plankton,2) + (1|pond), data = dat2)
-summary(plankton_model_quadratic)
-
-
-##Medium prey. Not significant
-med_prey_model_quadratic <- lmer(log_larv_dens ~ poly(log_medium_prey,2) + (1|pond), data = dat2)
-summary(med_prey_model_quadratic)
-
-
-
-#Everything Else
-#Distance to nearest breeding pond. Quadratic term not significant.
-distance_model_quadratic <-  lmer(log_larv_dens ~ poly(log_dist_to_breed,2) + (1|pond), data = dat3)
-summary(distance_model_quadratic)
-
-##Depth. Quadratic term not significant
-depth_model_quadratic <- lmer(log_larv_dens ~ poly(depth,2) + (1|pond), data = dat3)
-summary(depth_model_quadratic)
-
-#Emergent vegetation. Not significant
-emergent_veg_model_quadratic <-  lmer(log_larv_dens ~ poly(sqrt_emergent_veg,2) + (1|pond), data = dat3)
-summary(emergent_veg_model_quadratic)
-
-##Suitable 598m habitat buffer split by roads. Not significant
-suitable_split_model_quadratic <- lmer(log_larv_dens ~ poly(suitable_598_split,2) + (1|pond), data = dat3)
-summary(suitable_split_model_quadratic)
-
-##Suitable habitat 598m. Not significant.
-suitable_model_quadratic <- lmer(log_larv_dens ~ poly(suitable_598,2) + (1|pond), data = dat3)
-summary(suitable_model_quadratic)
-
-##Large prey. Not significant.
-large_prey_model_quadratic <- lmer(log_larv_dens ~ poly(log_large_prey,2) + (1|pond), data = dat3)
-summary(large_prey_model_quadratic)
-
-##Invertebrate predators. Quadratic term significant (p = 0.0116) but linear term is not (p = 0.312)
-invert_pred_model <- lmer(log_larv_dens ~ log_invert_pred + (1|pond), data = dat3)
-summary(invert_pred_model)
-
-#Water temperature. Quadratic term significant (p = 0.0447), but linear term is not (p = 0.81)
-temp_model_quadratic <- lmer(log_larv_dens ~ poly(log_water_temp,2) + (1|pond), data = dat3)
-summary(temp_model_quadratic)
-
-#Salinity model. Not significant.
-salinity_model_quadratic <- lmer(log_larv_dens ~ poly(log_salinity,2) + (1|pond), data = dat3)
-summary(salinity_model_quadratic)
-
-#Turbidity model. Not significant.
-turbidity_model_quadratic <-  lmer(log_larv_dens ~ poly(log_turbidity,2) + (1|pond), data = dat3)
-summary(turbidity_model_quadratic)
-
-#Chlorophyll. Not significant
-chlorophyll_model_quadratic <- lmer(log_larv_dens ~ poly(sqrt_chlorophyll,2) + (1|pond), data = dat3)
-summary(chlorophyll_model_quadratic)
-
+# Visualizing the three significant bivariate fits 
 ################################################################################
 
+## Distance Model --------------------------------------------------------------
+distance_model <- lmer(log_larv_dens ~ log_dist_to_breed +  (1|pond), data = data)
 
-
-# NOTE ON FOLLOWING SECTION###################
-## Investigate the .fitted vs .fixed value as a response variable in these plots##
-
-
-
-
-
-
-
-# Visualizing the four significant bivariate fits ##############################
-
-## Depth model
-### This code modifies the original model into a tidy format
-tidy_depth <- augment(depth_model)
-
-### This plots the actual datapoints but fits a line to the predicted effects
-depth_plot <- ggplot(data = tidy_depth,
-       mapping = aes(x = depth,
-                     y = .fitted))+
-  geom_smooth(method = "lm", level = 0.95)+
-  geom_point(mapping = aes(x = depth,
-                           y = log_larv_dens))+
-  labs(x = "Pond Depth (cm)",
-       y = "Predicted log-Larval Density") +
-  theme_classic()
-
-
-## Distance Model
 tidy_distance <- augment(distance_model)
 
 ### This plots the actual datapoints but fits a line to the predicted effects
@@ -378,40 +227,61 @@ distance_plot <- ggplot(data = tidy_distance,
   geom_smooth(method = "lm", level = 0.95)+
   geom_point(mapping = aes(x = log_dist_to_breed,
                            y = log_larv_dens)) +
-  labs(x = "log-Distance to Nearest Breeding Pond",
-       y = "Predicted log-Larval Density") +
-  theme_classic()
+  labs(x = "Distance to Nearest Breeding Pond (log m)",
+       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 18),
+        title = element_text(size = 20))
 
+distance_plot
 
-##Emergent Vegetation Model
-tidy_veg <- augment(emergent_veg_model)
+##Salinity Model ---------------------------------------------------------------
+salinity_model <- lmer(log_larv_dens ~ log_salinity +  (1|pond), data = data)
+summary(salinity_model)
+tidy_salinity <- augment(salinity_model)
 
 ### This plots the actual datapoints but fits a line to the predicted response
-veg_plot <- ggplot(data = tidy_veg,
-       mapping = aes(x = sqrt_emergent_veg,
+salinity_plot <- ggplot(data = tidy_salinity,
+       mapping = aes(x = log_salinity,
                      y = .fitted))+
   geom_smooth(method = "lm", level = 0.95)+
-  geom_point(mapping = aes(x = sqrt_emergent_veg,
+  geom_point(mapping = aes(x = log_salinity,
                            y = log_larv_dens)) +
-  labs(x = "Square Root of the Percent of Pond Surface with Emergent Vegetation",
-       y = "Predicted log-Larval Density") +
-  theme_classic()
+  labs(x = "Salinity (log ppt)",
+       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 18),
+        title = element_text(size = 20))
  
+salinity_plot
 
 
-## Azolla model
+## Azolla model ----------------------------------------------------------------
+levels(data$azolla) <- c('Absent', 'Present')
+azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = data)
+summary(azolla_model)
+
 tidy_azolla <- augment(azolla_model)
 
 ## Boxplot of azolla model predictions. Still uses fits rather than fixed.
 ## Note, right now the points being displayed are predictions rather than the actual values
-azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla_presence_absence, y = .fitted)) + 
+azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) + 
   geom_boxplot() +
-  geom_jitter() +
+  geom_jitter(width = 0.1) +
   theme_classic()+
-  labs(x = "Azolla Present or Absent",
-       y = "log-Predicted Larval Density")
+  labs(x = "Azolla",
+       y = "log-Predicted Larval Density (log larvae/ " ~m^2) +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 18),
+        title = element_text(size = 20))
 
+azolla_plot
 
-
-multiPlot <- cowplot::plot_grid(azolla_plot, veg_plot, depth_plot, distance_plot)
-ggsave("Figures/bivariate_fits.png", multiPlot)
+multiPlot <- cowplot::plot_grid(azolla_plot, distance_plot, salinity_plot,
+                                nrow = 1,
+                                labels = c("A", "B", "C"),
+                                label_size = 30)
+multiPlot
+ggsave("Figures/bivariate_fits.png", multiPlot, width = 25, height = 10)
