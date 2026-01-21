@@ -1,9 +1,154 @@
-#Bivariate Fits of model data
+#Univariate Fits of model data
 
 #Load Packages
 library(lme4)
 library(tidyverse)
 library(broom.mixed)
+
+
+################################################################################
+# Read Data 
+################################################################################
+data <- read_csv("Data/univariate_analysis.csv")
+
+
+################################################################################
+# Generate univariate modeling functions
+################################################################################
+
+# Linear fit function ----------------------------------------------------------
+uni_model <- function(predictor, dat) {
+  as.numeric(predictor)
+  model <- lmer(log_larv_dens ~ predictor + (1|pond), data = dat)
+  summary(model)
+}
+
+
+# Quadratic fit function -------------------------------------------------------
+quad_model <- function(predictor, dat) {
+  as.numeric(predictor)
+  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = dat, na.action = na.exclude)
+  summary(model)
+}
+
+# Quadratic code needs a mutate the dataset to remove NA values
+
+
+
+################################################################################
+# Run models
+################################################################################
+# Depth  (p = 0.087)
+uni_model(data$depth ,dat = data)
+
+# Distance to nearest breeding pond (p = 0.005)*
+uni_model(data$log_dist_to_breed, dat = data)
+
+# Emergent vegetation (p = 0.075)
+uni_model(data$sqrt_emergent_veg, dat = data)
+
+# Medium Prey (p = 0.065)
+uni_model(data$log_med_prey, dat = data)
+
+# Large Prey (p = 0.701)
+uni_model(data$log_large_prey, dat = data)
+
+# Invert Pred (p = 0.653)
+uni_model(data$log_invert_pred, dat = data)
+
+# Plankton (p = 0.459)
+uni_model(data$log_plankton, dat = data)
+
+# Water Temp (p = 0.807)
+uni_model(data$log_water_temp, dat = data)
+
+# DO (p = 0.093)
+uni_model(data$log_DO, dat = data)
+
+# Nitrates (p = 0.415)
+uni_model(data$log_nitrates, dat = data)
+
+# pH (p = 0.529)
+uni_model(data$log_pH, dat = data)
+
+# Salinity (p = 0.023)*
+uni_model(data$log_salinity, dat = data)
+
+# Turbidity (p = 0.549)
+uni_model(data$log_turbidity, dat = data)
+
+# Chlorophyll (p = 0.698)
+uni_model(data$sqrt_chlorophyll, dat = data)
+
+# Azolla NEED TO DO
+
+
+################################################################################
+
+
+
+
+################################################################################
+# Quadratic Models
+################################################################################
+
+# Depth  (p = 0.087)
+quad_model(data$depth ,dat = data)
+
+# Distance to nearest breeding pond (p = 0.005)*
+quad_model(data$log_dist_to_breed, dat = data)
+
+# Emergent vegetation (p = 0.075)
+quad_model(data$sqrt_emergent_veg, dat = data)
+
+# Medium Prey (p = 0.065)
+uni_model(data$log_med_prey, dat = data)
+
+# Large Prey (p = 0.701)
+uni_model(data$log_large_prey, dat = data)
+
+# Invert Pred (p = 0.653)
+uni_model(data$log_invert_pred, dat = data)
+
+# Plankton (p = 0.459)
+uni_model(data$log_plankton, dat = data)
+
+# Water Temp (p = 0.807)
+uni_model(data$log_water_temp, dat = data)
+
+# DO (p = 0.093)
+uni_model(data$log_DO, dat = data)
+
+# Nitrates (p = 0.415)
+uni_model(data$log_nitrates, dat = data)
+
+# pH (p = 0.529)
+uni_model(data$log_pH, dat = data)
+
+# Salinity (p = 0.023)*
+uni_model(data$log_salinity, dat = data)
+
+# Turbidity (p = 0.549)
+uni_model(data$log_turbidity, dat = data)
+
+# Chlorophyll (p = 0.698)
+uni_model(data$sqrt_chlorophyll, dat = data)
+
+# Azolla NEED TO DO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Bivariate linear fits ########################################################
