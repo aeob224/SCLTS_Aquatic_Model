@@ -38,34 +38,23 @@ all_possible_models
 ## This identifies the top models with delta AIC <= 2
 ## May be useful for model averaging
 subset(all_possible_models, delta <= 2)
-##24 Models
-##Azolla: 23
-##Depth: 19
-##Distance to Nearest Breeding Pond: 21
-##Salinity: 18
-##Emergent Vegetation: 17
+##21 Models
+##Azolla: 20
+##Depth: 18
+##Distance to Nearest Breeding Pond: 19
 ##Vertebrate Predators: 17
-
+##Salinity: 16
+##Emergent Vegetation: 14
+## Invert Pred: 7
+## Large Prey: 4
+## Water Temp: 1
+## Suitable 598 Split: 1
 
 ##Model Averaging
 ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
 summary(ModelAvg)
 summary(model.avg(ModelAvg, subset = delta <= 2))
 
-##Model-averaged coefficients:  
-##(full average) 
-##                           Estimate Std. Error Adjusted SE z value Pr(>|z|)  
-##(Intercept)              -6.725e-01  9.279e-01   9.340e-01   0.720   0.4715  
-##azolla_presence_absence1 -3.592e-01  1.765e-01   1.781e-01   2.017   0.0437 *
-##depth                    -2.764e-03  1.942e-03   1.955e-03   1.414   0.1574  
-##log_dist_to_breed        -3.980e-01  2.419e-01   2.438e-01   1.633   0.1026  
-##log_invert_pred           4.741e-02  8.629e-02   8.669e-02   0.547   0.5845  
-##log_salinity             -4.118e-01  3.099e-01   3.117e-01   1.321   0.1864  
-##vert_pred1                2.663e-01  2.069e-01   2.081e-01   1.280   0.2007  
-##sqrt_emergent_veg         3.719e-02  3.720e-02   3.740e-02   0.994   0.3201  
-##log_large_prey            2.509e-02  7.489e-02   7.526e-02   0.333   0.7388  
-##log_water_temp            8.531e-02  4.259e-01   4.282e-01   0.199   0.8421  
-##suitable_598_split       -1.537e-08  1.179e-07   1.187e-07   0.130   0.8970  
 
 
 ##Here is the model if we just construct the significant terms from the model averaging
@@ -104,13 +93,6 @@ subset(all_possible_models_no_pretenders, delta <= 2)
 ModelAvg_no_pretenders <- model.avg(all_possible_models_no_pretenders, subset = delta <= 2)
 summary(ModelAvg_no_pretenders)
 
-##Model-averaged coefficients:  
-##(full average) 
-##                          Estimate Std. Error Adjusted SE z value Pr(>|z|)
-##(Intercept)              -0.196175   0.734275    0.738681   0.266    0.791
-##azolla_presence_absence1 -0.329200   0.208910    0.210067   1.567    0.117
-##log_dist_to_breed        -0.400706   0.258803    0.260504   1.538    0.124
-##depth                    -0.001326   0.001796    0.001804   0.735    0.462
  
 
 ## Model average with 95% cumulative weights
@@ -307,6 +289,8 @@ akaike_weights <- ggplot(weights,
   ylab("Predictor")+
   labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
   theme_classic(base_size = 32)
+
+akaike_weights
 
 ggsave(plot = akaike_weights,
        filename = "akaike_weights.png",
