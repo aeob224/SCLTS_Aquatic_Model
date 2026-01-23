@@ -2,6 +2,7 @@
 
 #Load Packages
 library(lme4)
+library(lmerTest)
 library(tidyverse)
 library(broom.mixed)
 library(cowplot)
@@ -23,7 +24,7 @@ uni_model <- function(predictor, data) {
   as.numeric(predictor)
   model <- lmer(log_larv_dens ~ predictor + (1|pond), data = data)
   print(summary(model))
-  print(anova(model))
+  anova(model)
 }
 
 # Run Models -------------------------------------------------------------------
