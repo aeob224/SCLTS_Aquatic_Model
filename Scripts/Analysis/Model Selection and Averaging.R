@@ -38,17 +38,17 @@ all_possible_models
 ## This identifies the top models with delta AIC <= 2
 ## May be useful for model averaging
 subset(all_possible_models, delta <= 2)
-##21 Models
-##Azolla: 20
-##Depth: 18
-##Distance to Nearest Breeding Pond: 19
-##Vertebrate Predators: 17
-##Salinity: 16
-##Emergent Vegetation: 14
-## Invert Pred: 7
+##14 Models
+## Depth: 14
+## Distance to Breeding Pond: 14
+## Salinity: 14
+## Vertebrate Predators:13
+## Azolla: 10
+## Emergent Vegetation: 6
+## Invert Predators: 6
 ## Large Prey: 4
 ## Water Temp: 1
-## Suitable 598 Split: 1
+## 598 Buffer Split: 1
 
 ##Model Averaging
 ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
@@ -58,14 +58,12 @@ summary(model.avg(ModelAvg, subset = delta <= 2))
 
 
 ##Here is the model if we just construct the significant terms from the model averaging
-AvgModelAzolla <- lmer(log_larv_dens ~ azolla_presence_absence +(1|pond), data = df)
+AvgModelAzolla <- lmer(log_larv_dens ~ +(1|pond), data = df)
 summary(AvgModelAzolla)
 vif(AvgModelAzolla)
 
 ##This is the top model from model selection, NOT THE AVERAGE
-TopModel<- lmer(log_larv_dens ~ depth + vert_pred + log_invert_pred +
-                         + log_salinity + log_dist_to_breed  + 
-                         + azolla_presence_absence + (1|pond), data = df)
+TopModel<- lmer(log_larv_dens ~ + (1|pond), data = df)
 summary(TopModel)
 vif(TopModel)
 r.squaredGLMM(TopModel)
@@ -272,12 +270,12 @@ Anova(yearLM)
 
 ## Calculates the sum akaike weights for each variable
 sum_weights <- sw(all_possible_models)
-
+sum_weights
 weights <- as.data.frame(sum_weights)
 
-weights$variable <- c("Azolla", "Distance to nearest breeding pond", "Depth", "Emergent vegetation",
-                          "Salinity", "Vertebrate predators", "Invertebrate predators", "Large prey",
-                          "Water temperature", "Suitable habitat within 598m", "Chlorophyll","Suitable habitat within 598m split by roads",
+weights$variable <- c("Azolla", "Distance to Nearest Breeding Pond", "Depth", "Vertebrate Predator Presence",
+                          "Salinity", "Emergent Vegetation", "Invertebrate Predator Density", "Large Prey Density",
+                          "Suitable habitat within 598m", "Water Temperature", "Suitable habitat within 598m split by roads","Chlorophyll",
                           "Turbidity")
 
 ##Plot cumulative akaike weights for each variables
