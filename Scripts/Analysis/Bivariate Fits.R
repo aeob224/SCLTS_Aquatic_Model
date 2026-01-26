@@ -11,8 +11,9 @@ library(cowplot)
 ################################################################################
 # Read Data 
 ################################################################################
-data <- read_csv("Data/univariate_analysis.csv") |>
-  mutate(azolla = as.factor(azolla))
+data <- read_csv("Data/univariate_data.csv") |>
+  mutate(azolla = as.factor(azolla),
+         vert_pred = as.factor(vert_pred))
 
 
 ################################################################################
@@ -29,56 +30,56 @@ uni_model <- function(predictor, data) {
 
 # Run Models -------------------------------------------------------------------
 
-# Azolla (p = 0.008)**
+# Azolla (p = 0.011)**
 uni_model(data$azolla, data)
 
-# Depth  (p = 0.093)
+# Depth  (p = 0.15)
 uni_model(data$depth, dat = data)
 
-# Distance to nearest breeding pond (p = 0.004)**
+# Distance to nearest breeding pond (p = 0.02)**
 uni_model(data$log_dist_to_breed, dat = data)
 
-# Emergent vegetation (p = 0.064)
-uni_model(data$sqrt_emergent_veg, dat = data)
+# Emergent vegetation (p = 0.041) **
+uni_model(data$sqr_emergent_veg, dat = data)
 
 # Medium Prey (p = 0.064)
 uni_model(data$log_med_prey, dat = data)
 
-# Large Prey (p = 0.862)
+# Large Prey (p = 0.694)
 uni_model(data$log_large_prey, dat = data)
 
-# Invert Pred (p = 0.654)
+# Invert Pred (p = 0.712)
 uni_model(data$log_invert_pred, dat = data)
 
-# Plankton (p = 0.473)
+# Plankton (p = 0.459)
 uni_model(data$log_plankton, dat = data)
 
-# Water Temp (p = 0.974)
+# Water Temp (p = 0.949)
 uni_model(data$log_water_temp, dat = data)
 
-# DO (p = 0.143)
+# DO (p = 0.093)
 uni_model(data$log_DO, dat = data)
 
-# Nitrates (p = 0.376)
+# Nitrates (p = 0.45)
 uni_model(data$log_nitrates, dat = data)
 
-# pH (p = 0.775)
+# pH (p = 0.642)
 uni_model(data$log_pH, dat = data)
 
-# Salinity (p = 0.018)*
+# Salinity (p = 0.014)*
 uni_model(data$log_salinity, dat = data)
 
-# Turbidity (p = 0.559)
+# Turbidity (p = 0.953)
 uni_model(data$log_turbidity, dat = data)
 
-# Chlorophyll (p = 0.652)
+# Chlorophyll (p = 0.674)
 uni_model(data$sqrt_chlorophyll, dat = data)
 
-#Suitable 598 (p = 0.325)
+#Suitable 598 (p = 0.417)
 uni_model(data$suitable_598, dat = data)
 
 
-#Suitable 598 split (p = 0.400)
+#Suitable 598 split (p = 0.421)
 uni_model(data$suitable_598_split, dat = data)
 
 ################################################################################
@@ -99,7 +100,7 @@ quad_model <- function(predictor, data) {
 
 # Depth
 dat <- data |>
-  select(depth, log_larv_dens, pond) |>
+  dplyr::select(depth, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$depth, dat)
@@ -115,10 +116,10 @@ quad_model(dat$log_dist_to_breed, dat)
 
 # Emergent vegetation
 dat <- data |>
-  dplyr::select(sqrt_emergent_veg, log_larv_dens, pond) |>
+  dplyr::select(sqr_emergent_veg, log_larv_dens, pond) |>
   drop_na()
 
-quad_model(dat$sqrt_emergent_veg, dat)
+quad_model(dat$sqr_emergent_veg, dat)
 
 
 # Medium Prey
@@ -212,7 +213,7 @@ quad_model(dat$sqrt_chlorophyll, dat)
 
 
 ################################################################################
-# Visualizing the three significant bivariate fits 
+# Visualizing the four significant bivariate fits 
 ################################################################################
 
 ## Distance Model --------------------------------------------------------------
@@ -280,10 +281,33 @@ azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) +
 
 azolla_plot
 
-multiPlot <- cowplot::plot_grid(azolla_plot, distance_plot, salinity_plot,
-                                nrow = 1,
-                                labels = c("A", "B", "C"),
+##Vegetation Model ---------------------------------------------------------------
+veg_model <- lmer(log_larv_dens ~ sqr_emergent_veg +  (1|pond), data = data, na.action = na.exclude)
+summary(salinity_model)
+tidy_veg <- augment(veg_model)
+
+### This plots the actual datapoints but fits a line to the predicted response
+veg_plot <- ggplot(data = tidy_veg,
+       mapping = aes(x = sqr_emergent_veg,
+                     y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95)+
+  geom_point(mapping = aes(x = sqr_emergent_veg,
+                           y = log_larv_dens)) +
+  labs(x = "Emergent Vegetation Cover (square root transformed)",
+       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 18),
+        axis.text = element_text(size = 18),
+        title = element_text(size = 20))
+ 
+veg_plot
+
+
+
+multiPlot <- cowplot::plot_grid(azolla_plot, distance_plot, salinity_plot, veg_plot,
+                                nrow = 2,
+                                labels = c("A", "B", "C", "D"),
                                 label_size = 30)
 multiPlot
-ggsave("Figures/bivariate_fits.png", multiPlot, width = 25, height = 10)
+ggsave("Figures/bivariate_fits.png", multiPlot, width = 25, height = 15)
 
