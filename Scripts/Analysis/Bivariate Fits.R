@@ -22,64 +22,63 @@ data <- read_csv("Data/univariate_analysis.csv") |>
 # Linear fit function generation -----------------------------------------------
 uni_model <- function(predictor, data) {
   as.numeric(predictor)
-  model <- lmer(log_larv_dens ~ predictor + (1|pond), data = data)
+  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude)
   print(summary(model))
   anova(model)
 }
 
 # Run Models -------------------------------------------------------------------
 
-
 # Azolla (p = 0.008)**
 uni_model(data$azolla, data)
 
-# Depth  (p = 0.087)
+# Depth  (p = 0.093)
 uni_model(data$depth, dat = data)
 
-# Distance to nearest breeding pond (p = 0.005)**
+# Distance to nearest breeding pond (p = 0.004)**
 uni_model(data$log_dist_to_breed, dat = data)
 
-# Emergent vegetation (p = 0.075)
+# Emergent vegetation (p = 0.064)
 uni_model(data$sqrt_emergent_veg, dat = data)
 
-# Medium Prey (p = 0.065)
+# Medium Prey (p = 0.064)
 uni_model(data$log_med_prey, dat = data)
 
-# Large Prey (p = 0.701)
+# Large Prey (p = 0.862)
 uni_model(data$log_large_prey, dat = data)
 
-# Invert Pred (p = 0.653)
+# Invert Pred (p = 0.654)
 uni_model(data$log_invert_pred, dat = data)
 
-# Plankton (p = 0.459)
+# Plankton (p = 0.473)
 uni_model(data$log_plankton, dat = data)
 
-# Water Temp (p = 0.807)
+# Water Temp (p = 0.974)
 uni_model(data$log_water_temp, dat = data)
 
-# DO (p = 0.093)
+# DO (p = 0.143)
 uni_model(data$log_DO, dat = data)
 
-# Nitrates (p = 0.415)
+# Nitrates (p = 0.376)
 uni_model(data$log_nitrates, dat = data)
 
-# pH (p = 0.529)
+# pH (p = 0.775)
 uni_model(data$log_pH, dat = data)
 
-# Salinity (p = 0.023)*
+# Salinity (p = 0.018)*
 uni_model(data$log_salinity, dat = data)
 
-# Turbidity (p = 0.549)
+# Turbidity (p = 0.559)
 uni_model(data$log_turbidity, dat = data)
 
-# Chlorophyll (p = 0.698)
+# Chlorophyll (p = 0.652)
 uni_model(data$sqrt_chlorophyll, dat = data)
 
-#Suitable 598 (p = 0.365)
+#Suitable 598 (p = 0.325)
 uni_model(data$suitable_598, dat = data)
 
 
-#Suitable 598 split (p = 0.413)
+#Suitable 598 split (p = 0.400)
 uni_model(data$suitable_598_split, dat = data)
 
 ################################################################################
@@ -93,7 +92,7 @@ uni_model(data$suitable_598_split, dat = data)
 
 # Quadratic Model function generation ------------------------------------------
 quad_model <- function(predictor, data) {
-  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = data)
+  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = data, na.action = na.exclude)
   summary(model)
 }
 
@@ -108,7 +107,7 @@ quad_model(dat$depth, dat)
 
 # Distance to nearest breeding pond
 dat <- data |>
-  select(log_dist_to_breed, log_larv_dens, pond) |>
+  dplyr::select(log_dist_to_breed, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_dist_to_breed, dat)
@@ -116,7 +115,7 @@ quad_model(dat$log_dist_to_breed, dat)
 
 # Emergent vegetation
 dat <- data |>
-  select(sqrt_emergent_veg, log_larv_dens, pond) |>
+  dplyr::select(sqrt_emergent_veg, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$sqrt_emergent_veg, dat)
@@ -124,7 +123,7 @@ quad_model(dat$sqrt_emergent_veg, dat)
 
 # Medium Prey
 dat <- data |>
-  select(log_med_prey, log_larv_dens, pond) |>
+  dplyr::select(log_med_prey, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_med_prey, dat)
@@ -132,7 +131,7 @@ quad_model(dat$log_med_prey, dat)
 
 # Large Prey
 dat <- data |>
-  select(log_large_prey, log_larv_dens, pond) |>
+  dplyr::select(log_large_prey, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_large_prey, dat)
@@ -140,7 +139,7 @@ quad_model(dat$log_large_prey, dat)
 
 # Invert Pred
 dat <- data |>
-  select(log_invert_pred, log_larv_dens, pond) |>
+  dplyr::select(log_invert_pred, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_invert_pred, dat)
@@ -148,7 +147,7 @@ quad_model(dat$log_invert_pred, dat)
 
 # Plankton
 dat <- data |>
-  select(log_plankton, log_larv_dens, pond) |>
+  dplyr::select(log_plankton, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_plankton, dat)
@@ -156,7 +155,7 @@ quad_model(dat$log_plankton, dat)
 
 # Water Temp
 dat <- data |>
-  select(log_water_temp, log_larv_dens, pond) |>
+  dplyr::select(log_water_temp, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_water_temp, dat)
@@ -164,7 +163,7 @@ quad_model(dat$log_water_temp, dat)
 
 # DO
 dat <- data |>
-  select(log_DO, log_larv_dens, pond) |>
+  dplyr::select(log_DO, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_DO, dat)
@@ -172,7 +171,7 @@ quad_model(dat$log_DO, dat)
 
 # Nitrates
 dat <- data |>
-  select(log_nitrates, log_larv_dens, pond) |>
+  dplyr::select(log_nitrates, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_nitrates, dat)
@@ -180,7 +179,7 @@ quad_model(dat$log_nitrates, dat)
 
 # pH
 dat <- data |>
-  select(log_pH, log_larv_dens, pond) |>
+  dplyr::select(log_pH, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_pH, dat)
@@ -188,7 +187,7 @@ quad_model(dat$log_pH, dat)
 
 # Salinity
 dat <- data |>
-  select(log_salinity, log_larv_dens, pond) |>
+  dplyr::select(log_salinity, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_salinity, dat)
@@ -196,7 +195,7 @@ quad_model(dat$log_salinity, dat)
 
 # Turbidity
 dat <- data |>
-  select(log_turbidity, log_larv_dens, pond) |>
+  dplyr::select(log_turbidity, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$log_turbidity, dat)
@@ -204,7 +203,7 @@ quad_model(dat$log_turbidity, dat)
 
 # Chlorophyll
 dat <- data |>
-  select(sqrt_chlorophyll, log_larv_dens, pond) |>
+  dplyr::select(sqrt_chlorophyll, log_larv_dens, pond) |>
   drop_na()
 
 quad_model(dat$sqrt_chlorophyll, dat)
@@ -218,6 +217,7 @@ quad_model(dat$sqrt_chlorophyll, dat)
 
 ## Distance Model --------------------------------------------------------------
 distance_model <- lmer(log_larv_dens ~ log_dist_to_breed +  (1|pond), data = data)
+summary(distance_model)
 
 tidy_distance <- augment(distance_model)
 
@@ -261,7 +261,7 @@ salinity_plot
 
 ## Azolla model ----------------------------------------------------------------
 levels(data$azolla) <- c('Absent', 'Present')
-azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = data)
+azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = data, na.action = na.exclude)
 summary(azolla_model)
 
 tidy_azolla <- augment(azolla_model)
@@ -270,7 +270,7 @@ tidy_azolla <- augment(azolla_model)
 ## Note, right now the points being displayed are predictions rather than the actual values
 azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) + 
   geom_boxplot() +
-  geom_jitter(width = 0.1) +
+  geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
   theme_classic()+
   labs(x = "Azolla",
        y = "log-Predicted Larval Density (log larvae/ " ~m^2) +
@@ -286,3 +286,4 @@ multiPlot <- cowplot::plot_grid(azolla_plot, distance_plot, salinity_plot,
                                 label_size = 30)
 multiPlot
 ggsave("Figures/bivariate_fits.png", multiPlot, width = 25, height = 10)
+
