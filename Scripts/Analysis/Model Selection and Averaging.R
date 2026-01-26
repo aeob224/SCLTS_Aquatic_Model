@@ -8,7 +8,7 @@ library(glmm)
 library(tidyverse)
 
 #Read Data ############################################################################################
-df <- read_csv("Data/model_data_no_ysi_or_plankton.csv")
+df <- read_csv("Data/no_ysi_or_plankton.csv")
 
 
 
@@ -18,7 +18,7 @@ df <- read_csv("Data/model_data_no_ysi_or_plankton.csv")
 df$vert_pred <- as.character(df$vert_pred)
 df$pond <- as.character(df$pond)
 df$year <- as.character(df$year)
-df$azolla_presence_absence <- as.character(df$azolla_presence_absence)
+df$azolla <- as.character(df$azolla)
 
 
 
@@ -28,7 +28,7 @@ options(na.action = "na.fail")
 ##create a global model
 global.model <- lmer(log_larv_dens ~ depth + suitable_598_split + suitable_598 + vert_pred + log_large_prey + log_invert_pred +
                        + log_water_temp + log_salinity + log_turbidity + log_dist_to_breed + sqrt_chlorophyll + 
-                       sqrt_emergent_veg + azolla_presence_absence + (1|pond), REML = FALSE, data = df)
+                       sqr_emergent_veg + azolla + (1|pond), REML = FALSE, data = df)
 
 ## Generate all model combinations
 ## This will take a few minutes to run
@@ -38,17 +38,19 @@ all_possible_models
 ## This identifies the top models with delta AIC <= 2
 ## May be useful for model averaging
 subset(all_possible_models, delta <= 2)
-##14 Models
-## Depth: 14
-## Distance to Breeding Pond: 14
-## Salinity: 14
-## Vertebrate Predators:13
-## Azolla: 10
-## Emergent Vegetation: 6
-## Invert Predators: 6
-## Large Prey: 4
-## Water Temp: 1
-## 598 Buffer Split: 1
+## 33 Models
+## Azolla: 33
+## Emergent Veg: 27
+## Depth: 25
+## Vert Pred: 22
+## Salinity: 22
+## Distance to Breeding: 20
+## Invert Pred: 11
+## Large Prey: 6
+## Water Temp 3
+## Suitable SPlit: 1
+## Suitable Unsplit: 1
+
 
 ##Model Averaging
 ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
@@ -63,39 +65,12 @@ summary(AvgModelAzolla)
 vif(AvgModelAzolla)
 
 ##This is the top model from model selection, NOT THE AVERAGE
-TopModel<- lmer(log_larv_dens ~ + (1|pond), data = df)
+TopModel<- lmer(log_larv_dens ~ azolla + depth + log_dist_to_breed + 
+                log_invert_pred + log_salinity + vert_pred + (1|pond), 
+                data = df)
 summary(TopModel)
 vif(TopModel)
 r.squaredGLMM(TopModel)
-
-
-
-
-##Out of the variables above, only azolla, depth, and distance to nearest breeding pond have p < 0.157.
-##Drop all other variables as thy are potentially pretending.
-options(na.action = "na.fail")
-
-##create a global model
-global.model <- lmer(log_larv_dens ~ depth  + log_dist_to_breed + azolla_presence_absence + 
-                       (1|pond), REML = FALSE, data = df)
-
-##Generate all model combinations
-all_possible_models_no_pretenders <- dredge(global.model)
-all_possible_models_no_pretenders
-
-##This identifies the top models with delta AIC <= 2
-##May be useful for model averaging
-subset(all_possible_models_no_pretenders, delta <= 2)
-
-##Model Averaging delta AICc <=2
-ModelAvg_no_pretenders <- model.avg(all_possible_models_no_pretenders, subset = delta <= 2)
-summary(ModelAvg_no_pretenders)
-
- 
-
-## Model average with 95% cumulative weights
-ModelAvg_no_pretenders_95 <- model.avg(all_possible_models_no_pretenders, subset = cumsum(weight) <= 0.95)
-summary(ModelAvg_no_pretenders_95)
 
 ##################################################################################################################
 
@@ -108,7 +83,7 @@ options(na.action = "na.fail")
 ##create a global model
 global.model <- lmer(log_larv_dens ~ depth + suitable_598_split + suitable_598 + vert_pred + log_large_prey + log_invert_pred +
                        + log_water_temp + log_salinity + log_turbidity + log_dist_to_breed + sqrt_chlorophyll + 
-                       sqrt_emergent_veg + (1|pond), REML = FALSE, data = df)
+                       sqr_emergent_veg + (1|pond), REML = FALSE, data = df)
 
 ##Generate all model combinations
 all_possible_models_no_azolla <- dredge(global.model)
@@ -117,15 +92,15 @@ all_possible_models_no_azolla
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
-##12 Models
-##Depth: 10
-##Distance to Nearest Breeding Pond: 10
-##Salinity: 8
-##Emergent Vegetation: 6
-##Vertebrate Predators: 9
-##Invert Predators: 2
-##Large Prey: 2
-##Water Temperature:2
+##1 Models
+## Depth: 11
+## Distance to Nearest Breeding Pond: 11
+## Vertebrate Predators: 10
+## Salinity: 9
+## Emergent Vegetation: 6
+## Large Prey: 3
+## Invert Predators: 3
+## Water Temp: 2
 
 
 ##Model Averaging
@@ -133,19 +108,6 @@ ModelAvgNoAzolla <- model.avg(all_possible_models_no_azolla, subset = delta <= 2
 summary(ModelAvgNoAzolla)
 summary(model.avg(ModelAvgNoAzolla, subset = delta <= 2))
 
-##Model-averaged coefficients:  
-##(full average) 
-##                   Estimate Std. Error Adjusted SE z value Pr(>|z|)   
-##(Intercept)       -0.457023   1.075641    1.082769   0.422  0.67296   
-##depth             -0.004281   0.001595    0.001612   2.656  0.00791 **
-##log_dist_to_breed -0.531773   0.211097    0.213397   2.492  0.01270 * 
-##log_salinity      -0.452086   0.295541    0.297495   1.520  0.12860   
-##vert_pred1         0.340381   0.186169    0.187766   1.813  0.06986 . 
-##sqrt_emergent_veg  0.027605   0.035020    0.035199   0.784  0.43289   
-##log_large_prey     0.032647   0.084411    0.084808   0.385  0.70027   
-##log_water_temp     0.225586   0.675299    0.678679   0.332  0.73959   
-##log_invert_pred    0.020081   0.058469    0.058776   0.342  0.73261   
- 
 
 ##Here is the model if we just construct the significant terms from the model averaging
 AvgModelNoAzolla <- lmer(log_larv_dens ~ depth + log_dist_to_breed +(1|pond), data = df)
@@ -159,35 +121,6 @@ TopModelNoAzolla <- lmer(log_larv_dens ~ depth + vert_pred +
 summary(TopModelNoAzolla)
 vif(TopModelNoAzolla)
 r.squaredGLMM(TopModelNoAzolla)
-
-
-
-
-##Eliminating pretending variables in the No Azolla process.
-##Kept depth, distance to breeding pond, and salinity as they had p values less than 0.157
-global.model <- lmer(log_larv_dens ~ depth + log_salinity + log_dist_to_breed + vert_pred +
-                       (1|pond), REML = FALSE, data = df)
-
-##Generate all model combinations
-all_possible_models_no_azolla_no_pretending <- dredge(global.model)
-all_possible_models_no_azolla_no_pretending
-
-##This identifies the top models with delta AIC <= 2
-##May be useful for model averaging
-subset(all_possible_models_no_azolla_no_pretending, delta <= 2)
-##1 Model
-## All variables included
-
-
-##Model Averaging using delta AICc
-ModelAvgNoAzolla_no_pretending <- model.avg(all_possible_models_no_azolla_no_pretending, subset = delta <= 2)
-summary(ModelAvgNoAzolla_no_pretending)
-
-
-##Model averaging using 95% cumulative weights
-ModelAvgNoAzolla_no_pretending_95 <- model.avg(all_possible_models_no_azolla_no_pretending, subset = cumsum(weight) <= 0.95)
-summary(ModelAvgNoAzolla_no_pretending_95)
-
 
 #############################################################################################################
 
@@ -273,10 +206,10 @@ sum_weights <- sw(all_possible_models)
 sum_weights
 weights <- as.data.frame(sum_weights)
 
-weights$variable <- c("Azolla", "Distance to Nearest Breeding Pond", "Depth", "Vertebrate Predator Presence",
-                          "Salinity", "Emergent Vegetation", "Invertebrate Predator Density", "Large Prey Density",
-                          "Suitable habitat within 598m", "Water Temperature", "Suitable habitat within 598m split by roads","Chlorophyll",
-                          "Turbidity")
+weights$variable <- c("Azolla", "Emergent Vegetation", "Depth", "Vertebrate Predators",
+                      "Salinity", "Distance to Breeding Pond", "Invertebrae Predators",
+                      "Large Prey Density", "Suitable Habitat", "Water Temperature",
+                      "Chlorophyll", "Suitable Habitat Split by Roads", "Turbidity")
 
 ##Plot cumulative akaike weights for each variables
 akaike_weights <- ggplot(weights,
@@ -308,22 +241,18 @@ sum_weightsNoAzolla <- sw(all_possible_models_no_azolla)
 weightsNoAzolla <- as.data.frame(sum_weightsNoAzolla)
 
 weightsNoAzolla$variable <- c("Depth", "Distance to Breeding Pond", "Vertebrate Predators", 
-                      "Emergent Vegetation", "Salinity", "Water Temperature",
-                      "Large Prey", "Invertebrate Predators", "Chlorophyll",
-                      "Suitable 598m", "Suitable 598m Split", "Turbidity")
-
-ggplot(weightsNoAzolla,
-       aes(x = sum_weightsNoAzolla, y = variable)) +
-  geom_bar(stat = "identity")
+                      "Emergent Vegetation", "Salinity", "Large Prey Density",
+                      "Invertebrate Predator Density", "Water Temperature", "Suitable 598m",
+                      "Chlorophyll", "Suitable 598m Split", "Turbidity")
 
 
 ggplot(weightsNoAzolla,
        aes(x = sum_weightsNoAzolla, y = reorder(variable, sum_weightsNoAzolla))) +
-  geom_bar(stat = "identity")+
+  geom_bar(stat = "identity", fill = "black")+
   xlab("Sum Akaike Model Weights")+
   ylab("Predictor")+
   labs(title = "Sum Akaike weights for variables in models with \u0394AICc \u2264 2")+
-  theme_bw()
+  theme_classic()
 #########################################################################################
 
 
