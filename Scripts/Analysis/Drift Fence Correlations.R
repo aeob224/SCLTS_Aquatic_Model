@@ -130,7 +130,7 @@ p_value2022NoCalabasas <- coef(summary(model2022NoCalabasas))[2, 4]
 
 
 plot5 <- ggplot(data2022NoCalabasas, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 2) +
+  geom_point(size = 3) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
@@ -154,7 +154,7 @@ multiPlot <- cowplot::plot_grid(plot1, plot2, plot3, plot4, plot5,
                                 labels = c("A", "B", "C", "D", "E"),
                                 label_size = 20)
 multiPlot
-ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 25, height = 10)
+ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 25, height = 15)
 
 
 
