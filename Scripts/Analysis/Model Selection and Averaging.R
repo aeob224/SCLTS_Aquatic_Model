@@ -6,6 +6,7 @@ library(MuMIn)
 library(sjPlot)
 library(glmm)
 library(tidyverse)
+library(car)
 
 #Read Data ############################################################################################
 df <- read_csv("Data/no_ysi_or_plankton.csv")
@@ -69,9 +70,10 @@ TopModel<- lmer(log_larv_dens ~ azolla + depth + log_dist_to_breed +
                 log_invert_pred + log_salinity + vert_pred + (1|pond), 
                 data = df)
 summary(TopModel)
+
+shapiro.test(residuals(TopModel))
 vif(TopModel)
 r.squaredGLMM(TopModel)
-
 ##################################################################################################################
 
 
