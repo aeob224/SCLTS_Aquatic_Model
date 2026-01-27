@@ -226,14 +226,14 @@ tidy_distance <- augment(distance_model)
 distance_plot <- ggplot(data = tidy_distance,
        mapping = aes(x = log_dist_to_breed,
                      y = .fitted))+
-  geom_smooth(method = "lm", level = 0.95)+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = log_dist_to_breed,
                            y = log_larv_dens)) +
   labs(x = "Distance to Nearest Breeding Pond (log m)",
-       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 18),
-        axis.text = element_text(size = 18),
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
         title = element_text(size = 20))
 
 distance_plot
@@ -247,16 +247,16 @@ tidy_salinity <- augment(salinity_model)
 salinity_plot <- ggplot(data = tidy_salinity,
        mapping = aes(x = log_salinity,
                      y = .fitted))+
-  geom_smooth(method = "lm", level = 0.95)+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = log_salinity,
                            y = log_larv_dens)) +
   labs(x = "Salinity (log ppt)",
-       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 18),
-        axis.text = element_text(size = 18),
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
         title = element_text(size = 20))
- 
+
 salinity_plot
 
 
@@ -273,10 +273,10 @@ azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) +
   geom_boxplot() +
   geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
   theme_classic()+
-  labs(x = "Azolla",
-       y = "log-Predicted Larval Density (log larvae/ " ~m^2) +
-  theme(axis.title = element_text(size = 18),
-        axis.text = element_text(size = 18),
+  labs(x = "Azolla Presence",
+       y = "Larval Density (log larvae/ " ~m^2) +
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
         title = element_text(size = 20))
 
 azolla_plot
@@ -290,24 +290,24 @@ tidy_veg <- augment(veg_model)
 veg_plot <- ggplot(data = tidy_veg,
        mapping = aes(x = sqr_emergent_veg,
                      y = .fitted))+
-  geom_smooth(method = "lm", level = 0.95)+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = sqr_emergent_veg,
                            y = log_larv_dens)) +
-  labs(x = "Emergent Vegetation Cover (square root transformed)",
-       y = "Predicted log-Larval Density (log larvae/ " ~m^2) +
+  labs(x = "Emergent Vegetation Percent Coverage (square root transformed)",
+       y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 18),
-        axis.text = element_text(size = 18),
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
         title = element_text(size = 20))
  
 veg_plot
 
 
 
-multiPlot <- cowplot::plot_grid(azolla_plot, distance_plot, salinity_plot, veg_plot,
+multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_plot,
                                 nrow = 2,
                                 labels = c("A", "B", "C", "D"),
                                 label_size = 30)
 multiPlot
-ggsave("Figures/bivariate_fits.png", multiPlot, width = 25, height = 15)
+ggsave("Figures/univariate_fits.png", multiPlot, width = 25, height = 15)
 
