@@ -39,18 +39,17 @@ all_possible_models
 ## This identifies the top models with delta AIC <= 2
 ## May be useful for model averaging
 subset(all_possible_models, delta <= 2)
-## 33 Models
-## Azolla: 33
-## Emergent Veg: 27
-## Depth: 25
-## Vert Pred: 22
-## Salinity: 22
-## Distance to Breeding: 20
-## Invert Pred: 11
-## Large Prey: 6
-## Water Temp 3
-## Suitable SPlit: 1
-## Suitable Unsplit: 1
+## 20 Models
+## Azolla: 20
+## Salinity: 20
+## Depth: 18
+## Vert Pred: 17
+## Distance to Breeding Pond: 15
+## Eergebt Vegetation: 13
+## Invertebrate Predators: 8
+## Large Prey: 5
+## Water Temp: 3
+## Suitable 598 Split: 1
 
 
 ##Model Averaging
@@ -94,12 +93,12 @@ all_possible_models_no_azolla
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
-##1 Models
-## Depth: 11
-## Distance to Nearest Breeding Pond: 11
-## Vertebrate Predators: 10
-## Salinity: 9
-## Emergent Vegetation: 6
+## 9 Models
+## Depth: 9
+## Distance to Nearest Breeding Pond: 9
+## Salinity: 9 
+## Vertebrate Predators: 8
+## Emergent Vegetation: 4
 ## Large Prey: 3
 ## Invert Predators: 3
 ## Water Temp: 2
@@ -208,8 +207,8 @@ sum_weights <- sw(all_possible_models)
 sum_weights
 weights <- as.data.frame(sum_weights)
 
-weights$variable <- c("Azolla", "Emergent Vegetation", "Depth", "Vertebrate Predators",
-                      "Salinity", "Distance to Breeding Pond", "Invertebrae Predators",
+weights$variable <- c("Azolla", "Salinity", "Emergent Vegetation", "Depth",
+                      "Vertebrate Predators", "Distance to Breeding Pond", "Invertebrae Predators",
                       "Large Prey Density", "Suitable Habitat", "Water Temperature",
                       "Chlorophyll", "Suitable Habitat Split by Roads", "Turbidity")
 
