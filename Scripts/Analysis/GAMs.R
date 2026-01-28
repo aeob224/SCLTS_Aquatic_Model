@@ -24,3 +24,10 @@ model_important_variables <- gam(log_larv_dens ~ azolla_presence_absence + s(dep
 summary(model_important_variables)
 plot(model_important_variables)
 
+
+
+
+
+
+
+# Depth GAM with dry ponds included.
