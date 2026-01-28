@@ -13,7 +13,8 @@ library(cowplot)
 ################################################################################
 data <- read_csv("Data/univariate_data.csv") |>
   mutate(azolla = as.factor(azolla),
-         vert_pred = as.factor(vert_pred))
+         vert_pred = as.factor(vert_pred),
+         pond = as.factor(pond))
 
 
 ################################################################################
@@ -33,16 +34,16 @@ uni_model <- function(predictor, data) {
 # Azolla (p = 0.011)**
 uni_model(data$azolla, data)
 
-# Depth  (p = 0.15)
+# Depth  (p = 0.141)
 uni_model(data$depth, dat = data)
 
 # Distance to nearest breeding pond (p = 0.02)**
 uni_model(data$log_dist_to_breed, dat = data)
 
-# Emergent vegetation (p = 0.041) **
+# Emergent vegetation (p = 0.031) **
 uni_model(data$sqr_emergent_veg, dat = data)
 
-# Medium Prey (p = 0.064)
+# Medium Prey (p = 0.065)
 uni_model(data$log_med_prey, dat = data)
 
 # Large Prey (p = 0.694)
@@ -54,7 +55,7 @@ uni_model(data$log_invert_pred, dat = data)
 # Plankton (p = 0.459)
 uni_model(data$log_plankton, dat = data)
 
-# Water Temp (p = 0.949)
+# Water Temp (p = 0.988)
 uni_model(data$log_water_temp, dat = data)
 
 # DO (p = 0.093)
@@ -66,20 +67,20 @@ uni_model(data$log_nitrates, dat = data)
 # pH (p = 0.642)
 uni_model(data$log_pH, dat = data)
 
-# Salinity (p = 0.014)*
+# Salinity (p = 0.013)*
 uni_model(data$log_salinity, dat = data)
 
-# Turbidity (p = 0.953)
+# Turbidity (p = 0.906)
 uni_model(data$log_turbidity, dat = data)
 
-# Chlorophyll (p = 0.674)
+# Chlorophyll (p = 0.693)
 uni_model(data$sqrt_chlorophyll, dat = data)
 
-#Suitable 598 (p = 0.417)
+#Suitable 598 (p = 0.110)
 uni_model(data$suitable_598, dat = data)
 
 
-#Suitable 598 split (p = 0.421)
+#Suitable 598 split (p = 0.136)
 uni_model(data$suitable_598_split, dat = data)
 
 ################################################################################
@@ -311,3 +312,10 @@ multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_p
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 25, height = 15)
 
+
+
+
+library(mgcv)
+depth_gam <- gam(log_larv_dens ~ s(depth) + s(pond, bs = 're'), data = data, method = "REML")
+summary(depth_gam)
+plot(depth_gam)
