@@ -5,7 +5,7 @@ library(lme4)
 library(lmerTest)
 library(tidyverse)
 library(mgcv)
-data <- read_csv("Data/data_with_dry_ponds.csv")
+data <- read_csv("Data/dry_pond_dataset.csv")
 
 ##Depth linear mixed effects model 
 depth_model <- lmer(log_larv_dens ~ depth + (1|pond), data = data)
@@ -23,3 +23,4 @@ plot(depth_GAM)
 
 #Plotting the GAM
 plot(ggeffects::ggpredict(depth_GAM, terms = 'depth', facets = FALSE))
+
