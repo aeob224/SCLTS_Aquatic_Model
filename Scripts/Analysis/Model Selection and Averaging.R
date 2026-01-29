@@ -92,12 +92,12 @@ all_possible_models_no_azolla
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
-##1 Models
-## Depth: 11
-## Distance to Nearest Breeding Pond: 11
-## Vertebrate Predators: 10
+## 9 Models
+## Depth: 9
+## Distance to Nearest Breeding Pond: 9
+## Vertebrate Predators: 9
 ## Salinity: 9
-## Emergent Vegetation: 6
+## Emergent Vegetation: 4
 ## Large Prey: 3
 ## Invert Predators: 3
 ## Water Temp: 2
@@ -106,24 +106,84 @@ subset(all_possible_models_no_azolla, delta <= 2)
 ##Model Averaging
 ModelAvgNoAzolla <- model.avg(all_possible_models_no_azolla, subset = delta <= 2)
 summary(ModelAvgNoAzolla)
-summary(model.avg(ModelAvgNoAzolla, subset = delta <= 2))
 
 
 ##Here is the model if we just construct the significant terms from the model averaging
-AvgModelNoAzolla <- lmer(log_larv_dens ~ depth + log_dist_to_breed +(1|pond), data = df)
+AvgModelNoAzolla <- lmer(log_larv_dens ~ depth + log_dist_to_breed + log_salinity + vert_pred + (1|pond), data = df)
 summary(AvgModelNoAzolla)
 vif(AvgModelNoAzolla)
 
-##This is the top model from model selection, NOT THE AVERAGE
-TopModelNoAzolla <- lmer(log_larv_dens ~ depth + vert_pred +
-                         + log_salinity + log_dist_to_breed  + 
-                          + (1|pond), data = df)
-summary(TopModelNoAzolla)
-vif(TopModelNoAzolla)
-r.squaredGLMM(TopModelNoAzolla)
+## Plot average model
+summary(AvgModelNoAzolla)
+levels(df$vert_pred) <- c('Absent', 'Present')
+tidy_model <- augment(AvgModelNoAzolla)
+
+### This plots the actual datapoints but fits a line to the predicted response
+depth_plot <- ggplot(data = tidy_model,
+                   mapping = aes(x = depth,
+                                 y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
+  geom_point(mapping = aes(x = depth,
+                           y = log_larv_dens)) +
+  labs(x = "Depth (cm))",
+       y = "Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
+        title = element_text(size = 20))
+
+depth_plot
+
+
+distance_plot <- ggplot(data = tidy_model,
+                     mapping = aes(x = log_dist_to_breed,
+                                   y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
+  geom_point(mapping = aes(x = log_dist_to_breed,
+                           y = log_larv_dens)) +
+  labs(x = "Distance to Nearest Breeding Pond (log m)",
+       y = "Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
+        title = element_text(size = 20))
+
+distance_plot
+
+
+salinity_plot <- ggplot(data = tidy_model,
+                        mapping = aes(x = log_salinity,
+                                      y = .fitted))+
+  geom_smooth(method = "lm", level = 0.95, color = "black")+
+  geom_point(mapping = aes(x = log_salinity,
+                           y = log_larv_dens)) +
+  labs(x = "Salinity (log ppt)",
+       y = "Larval Density (log larvae/ " ~m^2) +
+  theme_classic() +
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
+        title = element_text(size = 20))
+
+salinity_plot
+
+
+
+
+## Boxplot of azolla model predictions. Still uses fits rather than fixed.
+## Note, right now the points being displayed are predictions rather than the actual values
+vert_pred_plot <- ggplot(data = tidy_model, aes(x = vert_pred, y = .fitted)) + 
+  geom_boxplot() +
+  geom_jitter(mapping = aes(x = vert_pred, y = log_larv_dens), width = 0.2) +
+  theme_classic()+
+  labs(x = "Vertebrate Predator Presence",
+       y = "Larval Density (log larvae/ " ~m^2) +
+  theme(axis.title = element_text(size = 24),
+        axis.text = element_text(size = 24),
+        title = element_text(size = 20))
+
+vert_pred_plot
 
 #############################################################################################################
-
 
 
 
