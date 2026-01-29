@@ -24,7 +24,7 @@ data <- read_csv("Data/univariate_data.csv") |>
 # Linear fit function generation -----------------------------------------------
 uni_model <- function(predictor, data) {
   as.numeric(predictor)
-  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude)
+  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude, REML = T)
   print(summary(model))
   anova(model)
 }
