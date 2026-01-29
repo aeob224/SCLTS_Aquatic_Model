@@ -43,14 +43,13 @@ subset(all_possible_models, delta <= 2)
 ## Azolla: 20
 ## Salinity: 20
 ## Depth: 18
-## Vert Pred: 17
-## Distance to Breeding Pond: 15
-## Eergebt Vegetation: 13
-## Invertebrate Predators: 8
+## Vertebrate Predators: 17
+## Distance to breeding pond: 15
+## Emergent Vegetation: 13
+## Invert predators: 8
 ## Large Prey: 5
 ## Water Temp: 3
-## Suitable 598 Split: 1
-
+#3 Suitable hab split: 1
 
 ##Model Averaging
 ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
@@ -93,12 +92,12 @@ all_possible_models_no_azolla
 ##This identifies the top models with delta AIC <= 2
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
-## 9 Models
-## Depth: 9
-## Distance to Nearest Breeding Pond: 9
-## Salinity: 9 
-## Vertebrate Predators: 8
-## Emergent Vegetation: 4
+##1 Models
+## Depth: 11
+## Distance to Nearest Breeding Pond: 11
+## Vertebrate Predators: 10
+## Salinity: 9
+## Emergent Vegetation: 6
 ## Large Prey: 3
 ## Invert Predators: 3
 ## Water Temp: 2
@@ -208,9 +207,9 @@ sum_weights
 weights <- as.data.frame(sum_weights)
 
 weights$variable <- c("Azolla", "Salinity", "Emergent Vegetation", "Depth",
-                      "Vertebrate Predators", "Distance to Breeding Pond", "Invertebrae Predators",
+                      "Vertebrate Predators", "Distance to Nearest Breeding Pond", "Invertebrae Predator Density",
                       "Large Prey Density", "Suitable Habitat", "Water Temperature",
-                      "Chlorophyll", "Suitable Habitat Split by Roads", "Turbidity")
+                      "Chlorophyll", "Suitable and Accessible Habitat", "Turbidity")
 
 ##Plot cumulative akaike weights for each variables
 akaike_weights <- ggplot(weights,
