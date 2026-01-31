@@ -220,6 +220,7 @@ quad_model(dat$sqrt_chlorophyll, dat)
 ## Distance Model --------------------------------------------------------------
 distance_model <- lmer(log_larv_dens ~ log_dist_to_breed +  (1|pond), data = data)
 summary(distance_model)
+p_valueDist <- coef(summary(distance_model))[2,5]
 
 tidy_distance <- augment(distance_model)
 
@@ -233,15 +234,19 @@ distance_plot <- ggplot(data = tidy_distance,
   labs(x = "Distance to Nearest Breeding Pond (log m)",
        y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 24),
-        axis.text = element_text(size = 24),
-        title = element_text(size = 20))
+  theme(axis.title = element_text(size = 34),
+        axis.text = element_text(size = 34),
+        title = element_text(size = 20)) +
+  annotate("text", x = 1.6, y = 0.55, label = paste("p = ", round(p_valueDist, 3)),
+           size = 18, color = "black") 
 
 distance_plot
+ggsave("Figures/distance.jpg", distance_plot, width = 25, height = 15)
 
 ##Salinity Model ---------------------------------------------------------------
 salinity_model <- lmer(log_larv_dens ~ log_salinity +  (1|pond), data = data)
 summary(salinity_model)
+p_value_salinity <- coef(summary(salinity_model))[2,5]
 tidy_salinity <- augment(salinity_model)
 
 ### This plots the actual datapoints but fits a line to the predicted response
@@ -254,37 +259,47 @@ salinity_plot <- ggplot(data = tidy_salinity,
   labs(x = "Salinity (log ppt)",
        y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 24),
-        axis.text = element_text(size = 24),
-        title = element_text(size = 20))
+  theme(axis.title = element_text(size = 34),
+        axis.text = element_text(size = 34),
+        title = element_text(size = 20)) +
+  annotate("text", x = 0.8, y = 0.55, label = paste("p = ", round(p_value_salinity, 3)),
+           size = 18, color = "black") 
+
 
 salinity_plot
+ggsave("Figures/salinity.jpg", salinity_plot, width = 25, height = 15)
 
 
 ## Azolla model ----------------------------------------------------------------
 levels(data$azolla) <- c('Absent', 'Present')
 azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = data, na.action = na.exclude)
+p_value_azolla <- coef(summary(azolla_model))[2,5]
 summary(azolla_model)
 
 tidy_azolla <- augment(azolla_model)
 
 ## Boxplot of azolla model predictions. Still uses fits rather than fixed.
-## Note, right now the points being displayed are predictions rather than the actual values
 azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) + 
   geom_boxplot() +
   geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
   theme_classic()+
   labs(x = "Azolla Presence",
        y = "Larval Density (log larvae/ " ~m^2) +
-  theme(axis.title = element_text(size = 24),
-        axis.text = element_text(size = 24),
-        title = element_text(size = 20))
+  theme(axis.title = element_text(size = 34),
+        axis.text = element_text(size = 34),
+        title = element_text(size = 20)) +
+  annotate("text", x = 0.6, y = 0.55, label = paste("p = ", round(p_value_azolla, 3)),
+           size = 18, color = "black") 
+
 
 azolla_plot
+ggsave("Figures/azolla.jpg", azolla_plot, width = 25, height = 15)
 
 ##Vegetation Model ---------------------------------------------------------------
 veg_model <- lmer(log_larv_dens ~ sqr_emergent_veg +  (1|pond), data = data, na.action = na.exclude)
 summary(salinity_model)
+p_value_veg <- coef(summary(veg_model))[2,5]
+
 tidy_veg <- augment(veg_model)
 
 ### This plots the actual datapoints but fits a line to the predicted response
@@ -297,13 +312,19 @@ veg_plot <- ggplot(data = tidy_veg,
   labs(x = "Emergent Vegetation Percent Coverage (square root transformed)",
        y = "Larval Density (log larvae/ " ~m^2) +
   theme_classic() +
-  theme(axis.title = element_text(size = 24),
-        axis.text = element_text(size = 24),
-        title = element_text(size = 20))
+  theme(axis.title = element_text(size = 34),
+        axis.text = element_text(size = 34),
+        title = element_text(size = 20)) +
+  annotate("text", x = 0.5, y = 0.55, label = paste("p = ", round(p_value_veg, 3)),
+           size = 18, color = "black") 
+
  
 veg_plot
+ggsave("Figures/emergent_veg.jpg", veg_plot, width = 25, height = 15)
 
 
+
+# Saving the multiplot ---------------------------------------------------------
 
 multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_plot,
                                 nrow = 2,
