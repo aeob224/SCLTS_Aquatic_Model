@@ -53,65 +53,82 @@ p_value2024 <- coef(summary(model2024))[2, 4]
 
 #2021 Plot
 plot1 <- ggplot(data2021, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2021")+
   theme_classic() +
-  theme(plot.title = element_text(size = 20), 
-        axis.text = element_text(size = 18), 
-        axis.title = element_text(size = 18)) +
+  theme(plot.title = element_text(size = 36), 
+        axis.text = element_text(size = 36), 
+        axis.title = element_text(size = 36)) +
   annotate("text", x = 0.3, y = 2.6, label = paste("R² = ", round(summary2021$r.squared, 3), "\n", "p = ", round(p_value2021, 3)),
-           size = 5, color = "black")
+           size = 15, color = "black")
 plot1
-
+ggsave("Figures/2021_correlation.jpg", 
+       plot = plot1,
+       height = 15,
+       width = 30)
 
 #2022 Plot
 plot2 <- ggplot(data2022, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2022")+
   theme_classic() +
-  theme(plot.title = element_text(size = 20), 
-        axis.text = element_text(size = 18), 
-        axis.title = element_text(size = 18)) +
+  theme(plot.title = element_text(size = 36), 
+        axis.text = element_text(size = 36), 
+        axis.title = element_text(size = 36)) +
   annotate("text", x = 0.3, y = 5.5, label = paste("R² = ", round(summary2022$r.squared, 3), "\n", "p = ", round(p_value2022, 3)),
-           size = 5, color = "black")
+           size = 15, color = "black")
 
 plot2
+ggsave("Figures/2022_correlation.jpg", 
+       plot = plot2,
+       height = 15,
+       width = 30)
+
 
 #2023 Plot
 plot3 <- ggplot(data2023, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2023")+
   theme_classic() +
-  theme(plot.title = element_text(size = 20), 
-        axis.text = element_text(size = 18), 
-        axis.title = element_text(size = 18)) +
+  theme(plot.title = element_text(size = 36), 
+        axis.text = element_text(size = 36), 
+        axis.title = element_text(size = 36)) +
   annotate("text",x = 0.25, y = 5.4, label = paste("R² = ", round(summary2023$r.squared, 3), "\n", "p = ", round(p_value2023, 3)),
-           size = 5, color = "black")
+           size = 15, color = "black")
 plot3
+ggsave("Figures/2023_correlation.jpg", 
+       plot = plot3,
+       height = 15,
+       width = 30)
+
 
 #2024 Plot
 plot4 <- ggplot(data2024, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count))) +
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   stat_smooth(method = "lm", colour = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2024")+
   theme_classic() +
-  theme(plot.title = element_text(size = 20), 
-        axis.text = element_text(size = 18), 
-        axis.title = element_text(size = 18))+
+  theme(plot.title = element_text(size = 36), 
+        axis.text = element_text(size = 36), 
+        axis.title = element_text(size = 36))+
   annotate("text",  x = 0.25, y = 6.7, label = paste("R² = ", round(summary2024$r.squared, 3), "\n", "p = ", round(p_value2024, 3)),
-           size = 5, color = "black") 
+           size = 15, color = "black") 
 plot4
+ggsave("Figures/2024_correlation.jpg", 
+       plot = plot4,
+       height = 15,
+       width = 30)
 
 
 
@@ -130,22 +147,32 @@ p_value2022NoCalabasas <- coef(summary(model2022NoCalabasas))[2, 4]
 
 
 plot5 <- ggplot(data2022NoCalabasas, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 3) +
+  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2022 without Calabasas")+
   theme_classic() +
-  theme(plot.title = element_text(size = 20), 
-        axis.text = element_text(size = 18), 
-        axis.title = element_text(size = 18)) +
+  theme(plot.title = element_text(size = 36), 
+        axis.text = element_text(size = 36), 
+        axis.title = element_text(size = 36)) +
   annotate("text", 
            x = 0.3, 
-           y = 6.5, 
+           y = 6.4, 
            label = paste("R² = ", round(summary2022NoCalabasas$r.squared, 3), "\n", "p = ", round(p_value2022NoCalabasas, 3)),
-           size = 5, 
+           size = 15, 
            color = "black")
 plot5
+ggsave("Figures/2022_no_calabasas_correlation.jpg", 
+       plot = plot5,
+       height = 15,
+       width = 30)
+
+
+
+
+
+
 
 
 multiPlot <- cowplot::plot_grid(plot1, plot2, plot3, plot4, plot5,
