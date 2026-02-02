@@ -232,7 +232,7 @@ distance_plot <- ggplot(data = tidy_distance,
   geom_point(mapping = aes(x = log_dist_to_breed,
                            y = log_larv_dens)) +
   labs(x = "Distance to Nearest Breeding Pond (log m)",
-       y = "Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
@@ -257,7 +257,7 @@ salinity_plot <- ggplot(data = tidy_salinity,
   geom_point(mapping = aes(x = log_salinity,
                            y = log_larv_dens)) +
   labs(x = "Salinity (log ppt)",
-       y = "Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
@@ -284,7 +284,7 @@ azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) +
   geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
   theme_classic()+
   labs(x = "Azolla Presence",
-       y = "Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/"~m^2~")") +
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
         title = element_text(size = 20)) +
@@ -310,7 +310,7 @@ veg_plot <- ggplot(data = tidy_veg,
   geom_point(mapping = aes(x = sqr_emergent_veg,
                            y = log_larv_dens)) +
   labs(x = "Emergent Vegetation Percent Coverage (square root transformed)",
-       y = "Larval Density (log larvae/ " ~m^2) +
+       y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
