@@ -69,15 +69,33 @@ TopModel<- lmer(log_larv_dens ~ azolla + depth + log_dist_to_breed +
                 data = df)
 summary(TopModel)
 
+
 shapiro.test(residuals(TopModel))
 vif(TopModel)
 r.squaredGLMM(TopModel)
-##################################################################################################################
 
 
 
+## Spatial Auto Correlation Test
+pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-#Model selection and averaging without Azolla ####################################################################
+
+moran_test_data <- data.frame(pond = df$pond, 
+                              year = df$year, 
+                              residuals = residuals(TopModel)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_test_data, "Data/moran_test_data.xlsx")
+  
+?writexl
+
+################################################################################
+#Model selection and averaging without Azolla 
+################################################################################
 options(na.action = "na.fail")
 
 ##create a global model
