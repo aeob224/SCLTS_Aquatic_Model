@@ -51,12 +51,14 @@ subset(all_possible_models, delta <= 2)
 ## Water Temp: 3
 #3 Suitable hab split: 1
 
-##Model Averaging
+##Model Averaging with delta AIC
 ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
 summary(ModelAvg)
 summary(model.avg(ModelAvg, subset = delta <= 2))
 
-
+## Model averaging with cumulative Akaike weights
+ModelAvgAIC <- model.avg(all_possible_models, subset = cumsum(weight) <= 0.95)
+summary(ModelAvgAIC)
 
 ##Here is the model if we just construct the significant terms from the model averaging
 AvgModelAzolla <- lmer(log_larv_dens ~ +(1|pond), data = df)
