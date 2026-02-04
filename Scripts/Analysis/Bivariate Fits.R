@@ -260,6 +260,7 @@ ggplot(tidy_prey, aes(x = prey, y = .fitted)) +
       stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
   theme_classic()
 
+# Water Temperature -----------------------------------------------------------
 water_dat <- data |>
   dplyr::select(log_water_temp, log_larv_dens, pond) |>
   drop_na()
@@ -275,6 +276,7 @@ ggplot(tidy_temp, aes(x = temp, y = .fitted)) +
       stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
   theme_classic()
 
+# Note: We left quadratics out of our assessmen
 
 
 ################################################################################
@@ -396,11 +398,3 @@ multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_p
                                 label_size = 30)
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 25, height = 15)
-
-
-
-
-library(mgcv)
-depth_gam <- gam(log_larv_dens ~ s(depth) + s(pond, bs = 're'), data = data, method = "REML")
-summary(depth_gam)
-plot(depth_gam)
