@@ -6,7 +6,7 @@ library(lmerTest)
 library(tidyverse)
 library(broom.mixed)
 library(cowplot)
-
+library(AICcmodavg)
 
 ################################################################################
 # Read Data 
@@ -16,6 +16,9 @@ data <- read_csv("Data/univariate_data.csv") |>
          vert_pred = as.factor(vert_pred),
          pond = as.factor(pond))
 
+dry_pond_data <- read_csv("Data/dry_pond_dataset.csv") |>
+  mutate(pond = as.factor(pond))
+
 
 ################################################################################
 # Run univariate models
@@ -24,9 +27,11 @@ data <- read_csv("Data/univariate_data.csv") |>
 # Linear fit function generation -----------------------------------------------
 uni_model <- function(predictor, data) {
   as.numeric(predictor)
-  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude, REML = T)
+  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude, REML = F)
   print(summary(model))
+  print(AICc(model))
   anova(model)
+  
 }
 
 # Run Models -------------------------------------------------------------------
@@ -34,8 +39,9 @@ uni_model <- function(predictor, data) {
 # Azolla (p = 0.011)**
 uni_model(data$azolla, data)
 
+
 # Depth  (p = 0.141)
-uni_model(data$depth, dat = data)
+uni_model(dry_pond_data$depth, dry_pond_data)
 
 # Distance to nearest breeding pond (p = 0.02)**
 uni_model(data$log_dist_to_breed, dat = data)
@@ -79,7 +85,6 @@ uni_model(data$sqrt_chlorophyll, dat = data)
 #Suitable 598 (p = 0.110)
 uni_model(data$suitable_598, dat = data)
 
-
 #Suitable 598 split (p = 0.136)
 uni_model(data$suitable_598_split, dat = data)
 
@@ -94,13 +99,14 @@ uni_model(data$suitable_598_split, dat = data)
 
 # Quadratic Model function generation ------------------------------------------
 quad_model <- function(predictor, data) {
-  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = data, na.action = na.exclude)
-  summary(model)
+  model <- lmer(log_larv_dens ~ poly(predictor,2) + (1|pond), data = data, na.action = na.exclude, REML = F)
+  print(summary(model))
+  print(AICc(model))
 }
 
 
-# Depth
-dat <- data |>
+# Depth (AICc lower than linear)
+dat <- dry_pond_data |>
   dplyr::select(depth, log_larv_dens, pond) |>
   drop_na()
 
@@ -210,6 +216,64 @@ dat <- data |>
 
 quad_model(dat$sqrt_chlorophyll, dat)
 
+# Suitable Hab 598m
+dat <- data |>
+  dplyr::select(suitable_598, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$suitable_598, dat)
+
+# Suitable Hab 598m Road Split
+dat <- data |>
+  dplyr::select(suitable_598_split, log_larv_dens, pond) |>
+  drop_na()
+
+quad_model(dat$suitable_598_split, dat)
+
+
+# Plot Significant Quadratics --------------------------------------------------
+## Depth
+depth_model <- lmer(log_larv_dens ~ poly(depth,2) + (1|pond), 
+                    data = dry_pond_data, 
+                    na.action = na.exclude)
+tidy_depth <- augment(depth_model)
+tidy_depth$depth <- dry_pond_data$depth
+
+ggplot(tidy_depth, aes(x = depth, y = .fitted)) +
+      geom_point(aes(x = depth, y = log_larv_dens)) +
+      stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
+  theme_classic()
+
+## Large Prey ------------------------------------------------------------------
+large_prey_dat <- data |>
+  dplyr::select(log_large_prey, log_larv_dens, pond) |>
+  drop_na()
+
+large_prey_model <- lmer(log_larv_dens ~ poly(log_large_prey,2) + (1|pond), 
+                    data = large_prey_dat, 
+                    na.action = na.exclude)
+tidy_prey <- augment(large_prey_model)
+tidy_prey$prey <- large_prey_dat$log_large_prey
+
+ggplot(tidy_prey, aes(x = prey, y = .fitted)) +
+      geom_point(aes(x = prey, y = log_larv_dens)) +
+      stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
+  theme_classic()
+
+water_dat <- data |>
+  dplyr::select(log_water_temp, log_larv_dens, pond) |>
+  drop_na()
+
+temp_model <- lmer(log_larv_dens ~ poly(log_water_temp,2) + (1|pond), 
+                    data = water_dat, 
+                    na.action = na.exclude)
+tidy_temp <- augment(temp_model)
+tidy_temp$temp <- water_dat$log_water_temp
+
+ggplot(tidy_temp, aes(x = temp, y = .fitted)) +
+      geom_point(aes(x = temp, y = log_larv_dens)) +
+      stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
+  theme_classic()
 
 
 
