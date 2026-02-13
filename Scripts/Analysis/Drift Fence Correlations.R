@@ -188,6 +188,21 @@ ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 25, height = 1
 #Now assessing all years pooled
 all_years <- lm(log(Drift_Fence_Actual_Count+1) ~ log(Metamorph_Estimate+1), data = df)
 summary(all_years)
+df$residuals <- all_years$residuals
+plot(x = df$depth, y = df$residuals)
+
+avg_resid_deep_ponds <- df |>
+  filter(depth > 152) |>
+  summarise(averageresid = mean(residuals))
+
+avg_resid_normal_ponds <- df |>
+  filter(depth < 152 & depth >= 70) |>
+  summarise(averageresid = mean(residuals))
+
+
+avg_resid_shallow_ponds <- df |>
+  filter(depth < 70) |>
+  summarise(averageresid = mean(residuals))
 
 ##Returning the slope of the regression to calculate trespass rate
 all_years_slope <- coef(all_years)[2]
