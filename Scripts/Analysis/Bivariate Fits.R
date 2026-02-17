@@ -397,4 +397,4 @@ multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_p
                                 labels = c("A", "B", "C", "D"),
                                 label_size = 30)
 multiPlot
-ggsave("Figures/univariate_fits.png", multiPlot, width = 30, height = 20)
+ggsave("Figures/univariate_fits.png", multiPlot, width = 35, height = 25)
