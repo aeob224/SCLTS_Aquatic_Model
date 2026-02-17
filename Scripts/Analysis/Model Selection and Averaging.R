@@ -287,7 +287,7 @@ sum_weights
 weights <- as.data.frame(sum_weights)
 
 weights$variable <- c("Azolla", "Salinity", "Emergent Vegetation", "Depth",
-                      "Vertebrate Predators", "Distance to Nearest Breeding Pond", "Invertebrae Predator Density",
+                      "Vertebrate Predators", "Distance to Nearest Breeding Pond", "Invertebrate Predator Density",
                       "Large Prey Density", "Suitable Habitat", "Water Temperature",
                       "Chlorophyll", "Suitable and Accessible Habitat", "Turbidity")
 

@@ -303,7 +303,7 @@ distance_plot <- ggplot(data = tidy_distance,
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
         title = element_text(size = 20)) +
-  annotate("text", x = 1.6, y = 0.55, label = paste("p = ", round(p_valueDist, 3)),
+  annotate("text", x = 3.6, y = 0.55, label = paste("p = ", round(p_valueDist, 3)),
            size = 18, color = "black") 
 
 distance_plot
@@ -354,7 +354,7 @@ azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) +
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
         title = element_text(size = 20)) +
-  annotate("text", x = 0.6, y = 0.55, label = paste("p = ", round(p_value_azolla, 3)),
+  annotate("text", x = 2.3, y = 0.55, label = paste("p = ", round(p_value_azolla, 3)),
            size = 18, color = "black") 
 
 
@@ -371,7 +371,7 @@ tidy_veg <- augment(veg_model)
 ### This plots the actual datapoints but fits a line to the predicted response
 veg_plot <- ggplot(data = tidy_veg,
        mapping = aes(x = sqr_emergent_veg,
-                     y = .fitted))+
+                     y = .fitted)) +
   geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = sqr_emergent_veg,
                            y = log_larv_dens)) +
@@ -381,7 +381,7 @@ veg_plot <- ggplot(data = tidy_veg,
   theme(axis.title = element_text(size = 34),
         axis.text = element_text(size = 34),
         title = element_text(size = 20)) +
-  annotate("text", x = 0.5, y = 0.55, label = paste("p = ", round(p_value_veg, 3)),
+  annotate("text", x = 8.9, y = 0.55, label = paste("p = ", round(p_value_veg, 3)),
            size = 18, color = "black") 
 
  
@@ -397,4 +397,4 @@ multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_p
                                 labels = c("A", "B", "C", "D"),
                                 label_size = 30)
 multiPlot
-ggsave("Figures/univariate_fits.png", multiPlot, width = 25, height = 15)
+ggsave("Figures/univariate_fits.png", multiPlot, width = 30, height = 20)
