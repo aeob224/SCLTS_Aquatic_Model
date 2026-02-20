@@ -346,7 +346,7 @@ tidy_azolla <- augment(azolla_model)
 
 ## Boxplot of azolla model predictions. Still uses fits rather than fixed.
 azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) + 
-  geom_boxplot() +
+  geom_boxplot(outliers = F) +
   geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
   theme_classic()+
   labs(x = "Azolla Presence",
