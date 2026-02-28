@@ -181,7 +181,7 @@ multiPlot <- cowplot::plot_grid(plot1, plot2, plot3, plot4, plot5,
                                 labels = "AUTO",
                                 label_size = 40)
 multiPlot
-ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 30, height = 22)
+ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 30, height = 20)
 
 
 
