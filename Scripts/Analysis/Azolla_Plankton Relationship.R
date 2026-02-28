@@ -3,8 +3,10 @@ library(tidyverse)
 library(lme4)
 library(rqs)
 
-data <- read_csv("Data/ysi_included.csv")
+data <- read_csv("Data/ysi_included.csv") |>
+  dplyr::filter(year >= 2023) 
 options(scipen = 999)
+
 
 data$pond <- as.character(data$pond)
 PlanktonAzollaModel <- lmer(log_plankton ~ azolla + (1|pond), data = data)
@@ -33,3 +35,12 @@ DOazolla <- lmer(log_DO ~ azolla + (1|pond), data = data)
 summary(DOazolla)
 anova(DOazolla)
 rsq::rsq.lmm(DOazolla)
+
+
+
+
+
+AzollaInteractionModel <- lmer(log_larv_dens ~ azolla + log_DO + azolla:log_DO + 
+                                 (1|pond), data = data)
+summary(AzollaInteractionModel)
+rsq::rsq.lmm(AzollaInteractionModel)
