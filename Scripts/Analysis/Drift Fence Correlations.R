@@ -62,7 +62,7 @@ plot1 <- ggplot(data2021, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence
   theme(plot.title = element_text(size = 36), 
         axis.text = element_text(size = 36), 
         axis.title = element_text(size = 36)) +
-  annotate("text", x = 0.3, y = 2.6, label = paste("R² = ", round(summary2021$r.squared, 3), "\n", "p = ", round(p_value2021, 3)),
+  annotate("text", x = 1.25, y = 2.5, label = paste("R² = ", round(summary2021$r.squared, 3), "\n", "p = ", round(p_value2021, 3)),
            size = 15, color = "black")
 plot1
 ggsave("Figures/2021_correlation.jpg", 
@@ -81,7 +81,7 @@ plot2 <- ggplot(data2022, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence
   theme(plot.title = element_text(size = 36), 
         axis.text = element_text(size = 36), 
         axis.title = element_text(size = 36)) +
-  annotate("text", x = 0.3, y = 5.5, label = paste("R² = ", round(summary2022$r.squared, 3), "\n", "p = ", round(p_value2022, 3)),
+  annotate("text", x = 1.25, y = 5.4, label = paste("R² = ", round(summary2022$r.squared, 3), "\n", "p = ", round(p_value2022, 3)),
            size = 15, color = "black")
 
 plot2
@@ -102,7 +102,7 @@ plot3 <- ggplot(data2023, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence
   theme(plot.title = element_text(size = 36), 
         axis.text = element_text(size = 36), 
         axis.title = element_text(size = 36)) +
-  annotate("text",x = 0.25, y = 5.4, label = paste("R² = ", round(summary2023$r.squared, 3), "\n", "p = ", round(p_value2023, 3)),
+  annotate("text",x = 1.1, y = 5.2, label = paste("R² = ", round(summary2023$r.squared, 3), "\n", "p = ", round(p_value2023, 3)),
            size = 15, color = "black")
 plot3
 ggsave("Figures/2023_correlation.jpg", 
@@ -122,7 +122,7 @@ plot4 <- ggplot(data2024, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence
   theme(plot.title = element_text(size = 36), 
         axis.text = element_text(size = 36), 
         axis.title = element_text(size = 36))+
-  annotate("text",  x = 0.25, y = 6.7, label = paste("R² = ", round(summary2024$r.squared, 3), "\n", "p = ", round(p_value2024, 3)),
+  annotate("text",  x = 1, y = 6.2, label = paste("R² = ", round(summary2024$r.squared, 3), "\n", "p = ", round(p_value2024, 3)),
            size = 15, color = "black") 
 plot4
 ggsave("Figures/2024_correlation.jpg", 
@@ -157,8 +157,8 @@ plot5 <- ggplot(data2022NoCalabasas, aes(x = log(Metamorph_Estimate+1), y = log(
         axis.text = element_text(size = 36), 
         axis.title = element_text(size = 36)) +
   annotate("text", 
-           x = 0.3, 
-           y = 6.4, 
+           x = 1.3, 
+           y = 6.0, 
            label = paste("R² = ", round(summary2022NoCalabasas$r.squared, 3), "\n", "p = ", round(p_value2022NoCalabasas, 3)),
            size = 15, 
            color = "black")
@@ -178,10 +178,10 @@ ggsave("Figures/2022_no_calabasas_correlation.jpg",
 multiPlot <- cowplot::plot_grid(plot1, plot2, plot3, plot4, plot5,
                                 nrow = 2,
                                 ncol = 3,
-                                labels = c("A", "B", "C", "D", "E"),
-                                label_size = 20)
+                                labels = "AUTO",
+                                label_size = 40)
 multiPlot
-ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 25, height = 15)
+ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 30, height = 22)
 
 
 
