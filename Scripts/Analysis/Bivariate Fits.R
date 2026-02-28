@@ -16,9 +16,19 @@ data <- read_csv("Data/univariate_data.csv") |>
          vert_pred = as.factor(vert_pred),
          pond = as.factor(pond))
 
+
 dry_pond_data <- read_csv("Data/dry_pond_dataset.csv") |>
   mutate(pond = as.factor(pond))
 
+
+# Filter only Azolla data from 2023 and 2024 as this is when the data are reliable
+azolla_data <- read_csv("Data/univariate_data.csv") |>
+  dplyr::filter(year >= 2023) |>
+  select(pond, year, log_larv_dens, azolla) |>
+  mutate(azolla = as.factor(azolla),
+         pond = as.factor(pond))
+  
+  
 
 ################################################################################
 # Run univariate models
@@ -36,8 +46,8 @@ uni_model <- function(predictor, data) {
 
 # Run Models -------------------------------------------------------------------
 
-# Azolla (p = 0.011)**
-uni_model(data$azolla, data)
+# Azolla 2023 + 2024 (p = 0.027)**
+uni_model(azolla_data$azolla, azolla_data)
 
 
 # Depth  (p = 0.141)
@@ -337,8 +347,8 @@ ggsave("Figures/salinity.jpg", salinity_plot, width = 25, height = 15)
 
 
 ## Azolla model ----------------------------------------------------------------
-levels(data$azolla) <- c('Absent', 'Present')
-azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = data, na.action = na.exclude)
+levels(azolla_data$azolla) <- c('Absent', 'Present')
+azolla_model <- lmer(log_larv_dens ~ azolla +  (1|pond), data = azolla_data, na.action = na.exclude)
 p_value_azolla <- coef(summary(azolla_model))[2,5]
 summary(azolla_model)
 
@@ -392,9 +402,9 @@ ggsave("Figures/emergent_veg.jpg", veg_plot, width = 25, height = 15)
 
 # Saving the multiplot ---------------------------------------------------------
 
-multiPlot <- cowplot::plot_grid(azolla_plot, salinity_plot, distance_plot, veg_plot,
+multiPlot <- cowplot::plot_grid(salinity_plot, distance_plot,azolla_plot, veg_plot,
                                 nrow = 2,
                                 labels = c("A", "B", "C", "D"),
-                                label_size = 30)
+                                label_size = 50)
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 35, height = 25)
