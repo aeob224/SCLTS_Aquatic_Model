@@ -7,6 +7,8 @@ library(tidyverse)
 library(broom.mixed)
 library(cowplot)
 library(AICcmodavg)
+library(readxl)
+library(readr)
 
 ################################################################################
 # Read Data 
@@ -19,6 +21,10 @@ data <- read_csv("Data/univariate_data.csv") |>
 
 dry_pond_data <- read_csv("Data/dry_pond_dataset.csv") |>
   mutate(pond = as.factor(pond))
+
+
+canopy_cover <- read_xlsx("Data/canopy_cover_data.xlsx", sheet = 1)
+  
 
 
 # Filter only Azolla data from 2023 and 2024 as this is when the data are reliable
@@ -37,18 +43,19 @@ azolla_data <- read_csv("Data/univariate_data.csv") |>
 # Linear fit function generation -----------------------------------------------
 uni_model <- function(predictor, data) {
   as.numeric(predictor)
-  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude, REML = F)
+  model <- lmerTest::lmer(log_larv_dens ~ predictor + (1|pond), data = data, na.action = na.exclude, REML = T)
   print(summary(model))
-  print(AICc(model))
   anova(model)
   
 }
 
 # Run Models -------------------------------------------------------------------
 
-# Azolla 2023 + 2024 (p = 0.027)**
-uni_model(azolla_data$azolla, azolla_data)
+# Canopy cover
+uni_model(canopy_cover$canopy_cover, canopy_cover)
 
+# Azolla 2023 + 2024 (p = 0.028)**
+uni_model(azolla_data$azolla, azolla_data)
 
 # Depth  (p = 0.141)
 uni_model(dry_pond_data$depth, dry_pond_data)
@@ -64,6 +71,9 @@ uni_model(data$log_med_prey, dat = data)
 
 # Large Prey (p = 0.694)
 uni_model(data$log_large_prey, dat = data)
+
+# Vert Pred (0.138)
+uni_model(data$vert_pred, data)
 
 # Invert Pred (p = 0.712)
 uni_model(data$log_invert_pred, dat = data)
