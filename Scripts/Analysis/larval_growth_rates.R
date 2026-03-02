@@ -191,6 +191,7 @@ ggplot(seascape1_2023,
   geom_jitter(width = 0.5) +
   theme_classic()
 
+library(mgcv)
 
 # Ellicott 2024 ----------------------------------------------------------------
 growth_model_ellicott_2024 <- lm(svl ~ date, data = ellicott_2024)
@@ -361,7 +362,7 @@ shapiro.test(residuals(mass_model_prospect_2024))
 ggplot(prospect_2024,
        mapping = aes(x = date,
                      y = mass)) +
-  stat_smooth(method = "lm") +
+    geom_smooth()+
   geom_jitter(width = 0.5) +
   theme_classic()
 
