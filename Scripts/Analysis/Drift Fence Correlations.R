@@ -2,6 +2,7 @@
 library(ggplot2)
 library(tidyverse)
 library(ggpubr)
+library(writexl)
 df <- read_csv("Data/Larval_Correlations_Sum_Density.csv")
 
 #Subsetting the data by year
@@ -190,6 +191,7 @@ all_years <- lm(log(Drift_Fence_Actual_Count+1) ~ log(Metamorph_Estimate+1), dat
 summary(all_years)
 df$residuals <- all_years$residuals
 plot(x = df$depth, y = df$residuals)
+write_xlsx(df, path = "Data/drift_fence_correlation_residuals.xlsx")
 
 avg_resid_deep_ponds <- df |>
   filter(depth > 152) |>
@@ -198,7 +200,7 @@ avg_resid_deep_ponds <- df |>
 avg_resid_normal_ponds <- df |>
   filter(depth < 152 & depth >= 70) |>
   summarise(averageresid = mean(residuals))
-
+mean(df$residuals)
 
 avg_resid_shallow_ponds <- df |>
   filter(depth < 70) |>
