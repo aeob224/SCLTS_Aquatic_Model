@@ -202,8 +202,8 @@ plot(residual_model)
 
 ggplot(data = df,
        mapping = aes(x = depth, y = residuals)) +
-  stat_smooth(method = lm,
-              formula = residuals ~ depth)
+  stat_smooth()+
+  geom_point()
 
 
 ##Returning the slope of the regression to calculate trespass rate
