@@ -348,7 +348,7 @@ shapiro.test(residuals(mass_model_ellicott_2024))
 
 ggplot(ellicott_2024,
        mapping = aes(x = date,
-                     y = svl)) +
+                     y = mass)) +
   stat_smooth(method = "lm") +
   geom_jitter(width = 0.5) +
   theme_classic()
