@@ -1,5 +1,4 @@
 #Making nice correlation plots for recruitment correlation
-library(ggplot2)
 library(tidyverse)
 library(ggpubr)
 library(writexl)
@@ -186,54 +185,36 @@ ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 30, height = 2
 
 
 
-#Now assessing all years pooled
+#Now assessing all years pooled ------------------------------------------------
 all_years <- lm(log(Drift_Fence_Actual_Count+1) ~ log(Metamorph_Estimate+1), data = df)
 summary(all_years)
 df$residuals <- all_years$residuals
 write_xlsx(df, path = "Data/drift_fence_correlation_residuals.xlsx")
-
-## Quadratic model showing residuals vs. depth
-## This is done to demonstrate the predcitive ability of our metric
-## Based on this, we can see that the model is not reliable at very shallow 
-## ponds, but at intermeidate and deep ponds, it does not significantly differ.
-quadratic_model <- lm(residuals ~ poly(depth,2) , 
-                    data = df, 
-                    na.action = na.exclude)
-summary(quadratic_model)
-
-  
-ggplot(df, aes(x = depth, y = residuals)) +
-  geom_point(aes(x = depth, y = residuals)) +
-  stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1, color = "black") +
-  labs(x = "Depth (cm)",
-       y = "Residuals") +
-  theme_classic()
-
-
-
-ggplot(daa = f,
-       mapping = aes(x = depth,
-                     y = residuals))
-
-
-avg_resid_deep_ponds <- df |>
-  filter(depth > 152) |>
-  summarise(averageresid = mean(residuals))
-
-avg_resid_normal_ponds <- df |>
-  filter(depth < 152 & depth >= 70) |>
-  summarise(averageresid = mean(residuals))
-mean(df$residuals)
-
-avg_resid_shallow_ponds <- df |>
-  filter(depth < 70) |>
-  summarise(averageresid = mean(residuals))
 
 ##Returning the slope of the regression to calculate trespass rate
 all_years_slope <- coef(all_years)[2]
 ##Slope is 0.24
 
 
+# Quadratic model showing residuals vs. depth ----------------------------------
+## This is done to demonstrate the predictive ability of our metric
+## Based on this, we can see that the model is not reliable at very shallow 
+## ponds, but at intermediate and deep ponds, it does not significantly differ.
+quadratic_model <- lm(residuals ~ poly(depth,2) , 
+                    data = df, 
+                    na.action = na.exclude)
+summary(quadratic_model)
+
+  
+residuals_depth_plot <- ggplot(df, aes(x = depth, y = residuals)) +
+  geom_point(aes(x = depth, y = residuals)) +
+  stat_smooth(method = "lm", formula = y ~ poly(x,2), size = 1, color = "black") +
+  labs(x = "Depth (cm)",
+       y = "Residuals") +
+  theme_classic()
+
+
+ggsave("Figures/residuals_vs_depth.jpg", residuals_depth_plot)
 
 
 
