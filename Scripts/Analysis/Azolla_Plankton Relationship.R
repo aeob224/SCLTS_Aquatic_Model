@@ -1,6 +1,7 @@
 #Relationship between Azolla and water quality variables
 library(tidyverse)
 library(lme4)
+library(lmerTest)
 library(rqs)
 
 data <- read_csv("Data/ysi_included.csv") |>
@@ -44,3 +45,9 @@ AzollaInteractionModel <- lmer(log_larv_dens ~ azolla + log_DO + azolla:log_DO +
                                  (1|pond), data = data)
 summary(AzollaInteractionModel)
 rsq::rsq.lmm(AzollaInteractionModel)
+
+
+
+AzollaInteractionModel <- lmer(log_larv_dens ~ log_DO + log_pH + log_DO:log_pH +
+                                 (1|pond), data = data)
+
