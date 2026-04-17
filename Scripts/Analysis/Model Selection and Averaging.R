@@ -9,6 +9,8 @@ library(sjPlot)
 library(glmm)
 library(tidyverse)
 library(car)
+library(writexl)
+
 
 # Read Data --------------------------------------------------------------------
 df <- read_csv("Data/no_ysi_or_plankton.csv")
@@ -88,25 +90,6 @@ r.squaredGLMM(TopModel)
 ## in for transparency.
 
 
-## Spatial Auto Correlation Test -----------------------------------------------
-pond_coords <- read_csv("Data/pond_coordinates.csv")
-
-
-moran_test_data <- data.frame(pond = df$pond, 
-                              year = df$year, 
-                              residuals = residuals(TopModel)) |>
-  group_by(pond) |>
-  summarise(residuals = as.numeric(mean(residuals))) |>
-  left_join(y = pond_coords, 
-            by = join_by(pond),
-            unmatched = "drop")
-
-write_xlsx(moran_test_data, "Data/moran_test_data.xlsx")
-  
-?writexl
-
-
-
 
 
 ################################################################################
@@ -158,6 +141,24 @@ vif(AvgModelNoAzolla)
 ## Plot average model
 summary(AvgModelNoAzolla)
 tidy_model <- augment(AvgModelNoAzolla)
+
+
+## Spatial Auto Correlation Test -----------------------------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_test_data <- data.frame(pond = df$pond, 
+                              year = df$year, 
+                              residuals = residuals(TopModelNoAzolla)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_test_data, "Data/moran_test_data.xlsx")
+
+
 
 ### This plots the actual datapoints but fits a line to the predicted response
 depth_plot <- ggplot(data = tidy_model,
