@@ -49,86 +49,72 @@ p_value2023 <- coef(summary(model2023))[2, 4]
 p_value2024 <- coef(summary(model2024))[2, 4]
 
 
-
+options(scipen = 999)
 
 #2021 Plot
 plot1 <- ggplot(data2021, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2021")+
   theme_classic() +
-  theme(plot.title = element_text(size = 36), 
-        axis.text = element_text(size = 36), 
-        axis.title = element_text(size = 36)) +
-  annotate("text", x = 1.25, y = 2.5, label = paste("R² = ", round(summary2021$r.squared, 3), "\n", "p = ", round(p_value2021, 3)),
-           size = 15, color = "black")
-plot1
-ggsave("Figures/2021_correlation.jpg", 
-       plot = plot1,
-       height = 15,
-       width = 30)
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"), 
+        axis.text = element_text(size = 8), 
+        axis.title = element_text(size = 8)) +
+  annotate("text", x = 0, y = 2.5, hjust = 0, label = paste("R² = ", signif(summary2021$r.squared, 1), "\n", "p = ", signif(p_value2021, 2)),
+           size = 3, color = "black") +
+  geom_point(size = 1) 
 
+plot1
+
+?annotate
 #2022 Plot
 plot2 <- ggplot(data2022, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2022")+
   theme_classic() +
-  theme(plot.title = element_text(size = 36), 
-        axis.text = element_text(size = 36), 
-        axis.title = element_text(size = 36)) +
-  annotate("text", x = 1.25, y = 5.4, label = paste("R² = ", round(summary2022$r.squared, 3), "\n", "p = ", round(p_value2022, 3)),
-           size = 15, color = "black")
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"), 
+        axis.text = element_text(size = 8), 
+        axis.title = element_text(size = 8)) +
+  geom_point(size = 1) +
+  annotate("text", x = 0, y = 5.5, hjust = 0, label = paste("R² = ", signif(summary2022$r.squared, 2), "\n", "p = ", signif(p_value2022, 2)),
+           size = 3, color = "black")
 
 plot2
-ggsave("Figures/2022_correlation.jpg", 
-       plot = plot2,
-       height = 15,
-       width = 30)
 
 
 #2023 Plot
 plot3 <- ggplot(data2023, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2023")+
   theme_classic() +
-  theme(plot.title = element_text(size = 36), 
-        axis.text = element_text(size = 36), 
-        axis.title = element_text(size = 36)) +
-  annotate("text",x = 1.1, y = 5.2, label = paste("R² = ", round(summary2023$r.squared, 3), "\n", "p = ", round(p_value2023, 3)),
-           size = 15, color = "black")
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"), 
+        axis.text = element_text(size = 8), 
+        axis.title = element_text(size = 8)) +
+  geom_point(size = 1) +
+  annotate("text",x = 0, y = 5.3, hjust = 0, label = paste("R² = ", signif(summary2023$r.squared, 2), "\n", "p = ", signif(p_value2023, 2)),
+           size = 3, color = "black")
 plot3
-ggsave("Figures/2023_correlation.jpg", 
-       plot = plot3,
-       height = 15,
-       width = 30)
 
 
 #2024 Plot
 plot4 <- ggplot(data2024, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count))) +
-  geom_point(size = 5) +
   stat_smooth(method = "lm", colour = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2024")+
   theme_classic() +
-  theme(plot.title = element_text(size = 36), 
-        axis.text = element_text(size = 36), 
-        axis.title = element_text(size = 36))+
-  annotate("text",  x = 1, y = 6.2, label = paste("R² = ", round(summary2024$r.squared, 3), "\n", "p = ", round(p_value2024, 3)),
-           size = 15, color = "black") 
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"), 
+        axis.text = element_text(size = 8), 
+        axis.title = element_text(size = 8))+
+  geom_point(size = 1) +
+  annotate("text",  x = 0, y = 6.2, hjust = 0, label = paste("R² = ", signif(summary2024$r.squared, 2), "\n", "p = ", signif(p_value2024, 2)),
+           size = 3, color = "black") 
 plot4
-ggsave("Figures/2024_correlation.jpg", 
-       plot = plot4,
-       height = 15,
-       width = 30)
 
 
 
@@ -147,31 +133,23 @@ p_value2022NoCalabasas <- coef(summary(model2022NoCalabasas))[2, 4]
 
 
 plot5 <- ggplot(data2022NoCalabasas, aes(x = log(Metamorph_Estimate+1), y = log(Drift_Fence_Actual_Count+1))) +
-  geom_point(size = 5) +
   stat_smooth(method = "lm", color = "black")+
   labs(x = "Predicted Metamorphs (log count)",
        y = "Observed Metamorphs (log count)",
        title = "2022 without Calabasas")+
   theme_classic() +
-  theme(plot.title = element_text(size = 36), 
-        axis.text = element_text(size = 36), 
-        axis.title = element_text(size = 36)) +
+  theme(plot.title = element_text(size = 8, hjust = 0.5, face = "bold"), 
+        axis.text = element_text(size = 8), 
+        axis.title = element_text(size = 8)) +
+  geom_point(size = 1) +
   annotate("text", 
-           x = 1.3, 
-           y = 6.0, 
-           label = paste("R² = ", round(summary2022NoCalabasas$r.squared, 3), "\n", "p = ", round(p_value2022NoCalabasas, 3)),
-           size = 15, 
+           x = 0, 
+           y = 5.9, 
+           hjust = 0, 
+           label = paste("R² = ", signif(summary2022NoCalabasas$r.squared, 2), "\n", "p = ", signif(p_value2022NoCalabasas, 2)),
+           size = 3, 
            color = "black")
 plot5
-ggsave("Figures/2022_no_calabasas_correlation.jpg", 
-       plot = plot5,
-       height = 15,
-       width = 30)
-
-
-
-
-
 
 
 
@@ -179,10 +157,19 @@ multiPlot <- cowplot::plot_grid(plot1, plot2, plot3, plot4, plot5,
                                 nrow = 2,
                                 ncol = 3,
                                 labels = "AUTO",
-                                label_size = 40)
+                                label_size = 10)
 multiPlot
 ggsave("Figures/drift_fence_correlations.jpg", multiPlot, width = 30, height = 20)
-
+ggsave("Figures/drift_fence_correlations.tiff", multiPlot, 
+       dpi = 1200,
+       width = 190, 
+       height = 150,
+       units = "mm")
+ggsave("Figures/drift_fence_correlations.jpeg", multiPlot, 
+       dpi = 1200,
+       width = 190, 
+       height = 150,
+       units = "mm")
 
 
 #Now assessing all years pooled
@@ -211,6 +198,12 @@ residuals_vs_depth_plot <- ggplot(df, aes(x = depth, y = residuals)) +
 residuals_vs_depth_plot
 
 ggsave("Figures/residuals_vs_depth.png", residuals_vs_depth_plot)
+ggsave("Figures/residuals_vs_depth.tiff", residuals_vs_depth_plot,
+       dpi = 1200,
+       width = 190, 
+       height = 150,
+       units = "mm")
+
 
 ##Returning the slope of the regression to calculate trespass rate
 all_years_slope <- coef(all_years)[2]

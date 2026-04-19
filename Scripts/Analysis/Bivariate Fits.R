@@ -311,21 +311,22 @@ p_valueDist <- coef(summary(distance_model))[2,5]
 
 tidy_distance <- augment(distance_model)
 
-### This plots the actual datapoints but fits a line to the predicted effects
+### This plots the actual data points but fits a line to the predicted effects
 distance_plot <- ggplot(data = tidy_distance,
        mapping = aes(x = log_dist_to_breed,
                      y = .fitted))+
   geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = log_dist_to_breed,
-                           y = log_larv_dens)) +
-  labs(x = "Distance to Nearest Breeding Pond (log m)",
+                           y = log_larv_dens),
+             size = 0.5) +
+  labs(x = "Distance to Nearest Other Breeding Pond (log m)",
        y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
-  theme(axis.title = element_text(size = 34),
-        axis.text = element_text(size = 34),
-        title = element_text(size = 20)) +
-  annotate("text", x = 3.6, y = 0.55, label = paste("p = ", round(p_valueDist, 3)),
-           size = 18, color = "black") 
+  theme(axis.title = element_text(size = 8),
+        axis.text = element_text(size = 8),
+        title = element_text(size = 8)) +
+  annotate("text", x = 3.225, y = 0.55, hjust = 0, label = paste("p = ", round(p_valueDist, 3)),
+           size = 3, color = "black") 
 
 distance_plot
 ggsave("Figures/distance.jpg", distance_plot, width = 25, height = 15)
@@ -342,15 +343,16 @@ salinity_plot <- ggplot(data = tidy_salinity,
                      y = .fitted))+
   geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = log_salinity,
-                           y = log_larv_dens)) +
+                           y = log_larv_dens),
+             size = 0.5) +
   labs(x = "Salinity (log ppt)",
        y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
-  theme(axis.title = element_text(size = 34),
-        axis.text = element_text(size = 34),
-        title = element_text(size = 20)) +
-  annotate("text", x = 0.8, y = 0.55, label = paste("p = ", round(p_value_salinity, 3)),
-           size = 18, color = "black") 
+  theme(axis.title = element_text(size = 8),
+        axis.text = element_text(size = 8),
+        title = element_text(size = 8)) +
+  annotate("text", x = 0.5, y = 0.55, hjust = 0.5, label = paste("p = ", round(p_value_salinity, 3)),
+           size = 3, color = "black") 
 
 
 salinity_plot
@@ -368,15 +370,15 @@ tidy_azolla <- augment(azolla_model)
 ## Boxplot of azolla model predictions. Still uses fits rather than fixed.
 azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) + 
   geom_boxplot(outliers = F, notch = T) +
-  geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1) +
+  geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1, size = 0.5) +
   theme_classic()+
   labs(x = "Azolla Presence",
        y = "Larval Density (log larvae/"~m^2~")") +
-  theme(axis.title = element_text(size = 34),
-        axis.text = element_text(size = 34),
-        title = element_text(size = 20)) +
-  annotate("text", x = 2.3, y = 0.55, label = paste("p = ", round(p_value_azolla, 3)),
-           size = 18, color = "black") 
+  theme(axis.title = element_text(size = 8),
+        axis.text = element_text(size = 8),
+        title = element_text(size = 8)) +
+  annotate("text", x = 2, y = 0.55, label = paste("p = ", round(p_value_azolla, 3)),
+           size = 3, color = "black") 
 
 
 azolla_plot
@@ -395,15 +397,16 @@ veg_plot <- ggplot(data = tidy_veg,
                      y = .fitted)) +
   geom_smooth(method = "lm", level = 0.95, color = "black")+
   geom_point(mapping = aes(x = sqr_emergent_veg,
-                           y = log_larv_dens)) +
-  labs(x = "Emergent Vegetation Percent Coverage (square root transformed)",
+                           y = log_larv_dens),
+             size = 0.5) +
+  labs(x = "Emergent Vegetation Percent Cover (square root transformed)",
        y = "Larval Density (log larvae/"~m^2~")") +
   theme_classic() +
-  theme(axis.title = element_text(size = 34),
-        axis.text = element_text(size = 34),
-        title = element_text(size = 20)) +
-  annotate("text", x = 8.9, y = 0.55, label = paste("p = ", round(p_value_veg, 3)),
-           size = 18, color = "black") 
+  theme(axis.title = element_text(size = 8),
+        axis.text = element_text(size = 8),
+        title = element_text(size = 8)) +
+  annotate("text", x = 7.5, y = 0.55, hjust = 0, label = paste("p = ", round(p_value_veg, 3)),
+           size = 3, color = "black") 
 
  
 veg_plot
@@ -416,11 +419,21 @@ ggsave("Figures/emergent_veg.jpg", veg_plot, width = 25, height = 15)
 multiPlot <- cowplot::plot_grid(salinity_plot, distance_plot,azolla_plot, veg_plot,
                                 nrow = 2,
                                 labels = c("A", "B", "C", "D"),
-                                label_size = 50)
+                                label_size = 10)
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 35, height = 25)
+ggsave("Figures/Manuscript Figures/figure_4.tiff", multiPlot,
+       dpi = 1200,
+       width = 190, 
+       height = 150,
+       units = "mm")
 
 
+ggsave("Figures/Manuscript Figures/figure_4.jpeg", multiPlot,
+       dpi = 1200,
+       width = 190, 
+       height = 150,
+       units = "mm")
 
 
 ################################################################################
