@@ -8,6 +8,7 @@ library(broom.mixed)
 library(cowplot)
 library(AICcmodavg)
 library(readxl)
+library(writexl)
 library(readr)
 
 ################################################################################
@@ -296,7 +297,7 @@ ggplot(tidy_temp, aes(x = temp, y = .fitted)) +
       stat_smooth(method = "lm", formula = y ~ x + I(x^2), size = 1) +
   theme_classic()
 
-# Note: We left quadratics out of our assessmen
+# Note: We left quadratics out of our assessment.  
 
 
 ################################################################################
@@ -418,3 +419,77 @@ multiPlot <- cowplot::plot_grid(salinity_plot, distance_plot,azolla_plot, veg_pl
                                 label_size = 50)
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 35, height = 25)
+
+
+
+
+################################################################################
+# Extracting Residuals for Spatial Autocorrelation
+################################################################################
+
+## Distance --------------------------------------------------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_distance <- data.frame(pond = data$pond, 
+                              year = data$year, 
+                              residuals = residuals(distance_model)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_distance, "Data/Moran Test Data/moran_distance.xlsx")
+
+
+
+## Salinity --------------------------------------------------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_salinity <- data.frame(pond = data$pond, 
+                             year = data$year, 
+                             residuals = residuals(salinity_model)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_salinity, "Data/Moran Test Data/moran_salinity.xlsx")
+
+
+
+## Azolla ----------------------------------------------------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_azolla <- data.frame(pond = azolla_data$pond, 
+                             year = azolla_data$year, 
+                             residuals = residuals(azolla_model)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_azolla, "Data/Moran Test Data/moran_azolla.xlsx")
+
+
+
+## Vegetation ----------------------------------------------------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_vegetation <- data.frame(pond = data$pond, 
+                           year = data$year, 
+                           residuals = residuals(veg_model)) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_vegetation, "Data/Moran Test Data/moran_vegetation.xlsx")
+
