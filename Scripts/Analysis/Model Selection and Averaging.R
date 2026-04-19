@@ -11,7 +11,6 @@ library(tidyverse)
 library(car)
 library(writexl)
 
-
 # Read Data --------------------------------------------------------------------
 df <- read_csv("Data/no_ysi_or_plankton.csv")
 
@@ -23,73 +22,6 @@ df$vert_pred <- as.character(df$vert_pred)
 df$pond <- as.character(df$pond)
 df$year <- as.character(df$year)
 df$azolla <- as.character(df$azolla)
-
-
-
-
-################################################################################
-# Model Selection with Azolla Included (Not in final analysis)
-################################################################################
-options(na.action = "na.fail")
-
-## Create a global model -------------------------------------------------------
-global.model <- lmer(log_larv_dens ~ depth + suitable_598_split + suitable_598 + 
-                       vert_pred + log_large_prey + log_invert_pred +log_water_temp + 
-                       log_salinity + log_turbidity + log_dist_to_breed + sqrt_chlorophyll + 
-                       sqr_emergent_veg + azolla + (1|pond), REML = FALSE, data = df)
-
-## Generate all model combinations
-## This will take a few minutes to run
-all_possible_models <- dredge(global.model)
-all_possible_models
-
-## This identifies the top models with delta AIC <= 2
-## May be useful for model averaging
-subset(all_possible_models, delta <= 2)
-## 20 Models
-## Azolla: 20
-## Salinity: 20
-## Depth: 18
-## Vertebrate Predators: 17
-## Distance to breeding pond: 15
-## Emergent Vegetation: 13
-## Invert predators: 8
-## Large Prey: 5
-## Water Temp: 3
-#3 Suitable hab split: 1
-
-## Model Averaging with delta AIC ----------------------------------------------
-ModelAvg <- model.avg(all_possible_models, subset = delta <= 2)
-summary(ModelAvg)
-summary(model.avg(ModelAvg, subset = delta <= 2))
-
-## Model averaging with cumulative Akaike weights ------------------------------
-ModelAvgAIC <- model.avg(all_possible_models, subset = cumsum(weight) <= 0.95)
-summary(ModelAvgAIC)
-
-## Here is the model if we just construct the significant terms from the model averaging
-AvgModelAzolla <- lmer(log_larv_dens ~ +(1|pond), data = df)
-summary(AvgModelAzolla)
-vif(AvgModelAzolla)
-
-## This is the top model from model selection, NOT THE AVERAGE -----------------
-TopModel<- lmer(log_larv_dens ~ azolla + depth + log_dist_to_breed + 
-                log_invert_pred + log_salinity + vert_pred + (1|pond), 
-                data = df)
-summary(TopModel)
-
-
-shapiro.test(residuals(TopModel))
-vif(TopModel)
-r.squaredGLMM(TopModel)
-
-## Above analysis uses Azolla, which may be important but it was not adequately
-## monitored in 2021 and 2022. To rectify this, the code in the next section
-## re-runs the above models without Azolla. This model without Azolla is what
-## ends up being used for the manuscript; however, I leave this first analysis
-## in for transparency.
-
-
 
 
 ################################################################################
@@ -104,11 +36,40 @@ global.model <- lmer(log_larv_dens ~ depth + suitable_598_split + suitable_598 +
                        log_dist_to_breed + sqrt_chlorophyll + 
                        sqr_emergent_veg + (1|pond), REML = FALSE, data = df)
 
-##Generate all model combinations
+##Generate all model combinations ----------------------------------------------
 all_possible_models_no_azolla <- dredge(global.model)
 all_possible_models_no_azolla
 
-##This identifies the top models with delta AIC <= 2
+model_list_AIC95 <- get.models(all_possible_models_no_azolla, subset = cumsum(weight) <= 0.95)
+
+
+## Model Averaging -------------------------------------------------------------
+ModelAvgNoAzolla <- model.avg(model_list_AIC95)
+summary(ModelAvgNoAzolla)
+
+## Calculate and extract residuals for spatial autocorrelation tests -----------
+model_average_predictions <- predict(ModelAvgNoAzolla)
+model_average_residuals <- df$log_larv_dens - model_average_predictions
+
+## Create residuals for spatial autocorrelation test ---------------------------
+pond_coords <- read_csv("Data/pond_coordinates.csv")
+
+
+moran_model_avg_data <- data.frame(pond = df$pond, 
+                              year = df$year, 
+                              residuals = model_average_residuals) |>
+  group_by(pond) |>
+  summarise(residuals = as.numeric(mean(residuals))) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_model_avg_data, "Data/Moran Test Data/moran_model_average.xlsx")
+
+
+
+
+##This identifies the top models with delta AIC <= 2 ---------------------------
 ##May be useful for model averaging
 subset(all_possible_models_no_azolla, delta <= 2)
 ## 9 Models
@@ -121,12 +82,6 @@ subset(all_possible_models_no_azolla, delta <= 2)
 ## Invert Predators: 3
 ## Water Temp: 2
 
-
-## Model Averaging
-ModelAvgNoAzolla <- model.avg(all_possible_models_no_azolla, subset = cumsum(weight) <= 0.95)
-summary(ModelAvgNoAzolla)
-
-
 ## Model averaging by delta AIC
 ModelAvgDeltAIC <- model.avg(all_possible_models_no_azolla, subset = delta <= 4)
 summary(ModelAvgDeltAIC)
@@ -136,18 +91,14 @@ summary(ModelAvgDeltAIC)
 TopModelNoAzolla <- lmer(log_larv_dens ~ depth + log_dist_to_breed + log_salinity +
                            vert_pred + (1|pond), data = df)
 summary(TopModelNoAzolla)
-vif(AvgModelNoAzolla)
-
-## Plot average model
-summary(AvgModelNoAzolla)
-tidy_model <- augment(AvgModelNoAzolla)
+vif(TopModelNoAzolla)
 
 
-## Spatial Auto Correlation Test -----------------------------------------------
+## Spatial Auto Correlation Test for Top Model----------------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
 
-moran_test_data <- data.frame(pond = df$pond, 
+moran_top_model <- data.frame(pond = df$pond, 
                               year = df$year, 
                               residuals = residuals(TopModelNoAzolla)) |>
   group_by(pond) |>
@@ -156,8 +107,12 @@ moran_test_data <- data.frame(pond = df$pond,
             by = join_by(pond),
             unmatched = "drop")
 
-write_xlsx(moran_test_data, "Data/moran_test_data.xlsx")
+write_xlsx(moran_top_model, "Data/Moran Test Data/moran_top_model.xlsx")
 
+
+## Plot average model ----------------------------------------------------------
+summary(AvgModelNoAzolla)
+tidy_model <- augment(AvgModelNoAzolla)
 
 
 ### This plots the actual datapoints but fits a line to the predicted response
