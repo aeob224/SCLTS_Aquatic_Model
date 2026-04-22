@@ -456,11 +456,18 @@ moran_distance <- data.frame(pond = data$pond,
 write_xlsx(moran_distance, "Data/Moran Test Data/moran_distance.xlsx")
 
 
+moran_distance_total <- data.frame(pond = data$pond, 
+                              year = data$year, 
+                              residuals = residuals(distance_model)) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+write_xlsx(moran_distance_total, "Data/Moran Test Data/moran_distance_total.xlsx")
 
 ## Salinity --------------------------------------------------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-
+# Average residuals by pond
 moran_salinity <- data.frame(pond = data$pond, 
                              year = data$year, 
                              residuals = residuals(salinity_model)) |>
@@ -472,12 +479,20 @@ moran_salinity <- data.frame(pond = data$pond,
 
 write_xlsx(moran_salinity, "Data/Moran Test Data/moran_salinity.xlsx")
 
+# Residuals by survey
+moran_salinity_all_points <- data.frame(pond = data$pond, 
+                             year = data$year, 
+                             residuals = residuals(salinity_model)) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
 
+write_xlsx(moran_salinity_all_points, "Data/Moran Test Data/moran_salinity_all_points.xlsx")
 
 ## Azolla ----------------------------------------------------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-
+# Average residuals by pond
 moran_azolla <- data.frame(pond = azolla_data$pond, 
                              year = azolla_data$year, 
                              residuals = residuals(azolla_model)) |>
@@ -489,12 +504,21 @@ moran_azolla <- data.frame(pond = azolla_data$pond,
 
 write_xlsx(moran_azolla, "Data/Moran Test Data/moran_azolla.xlsx")
 
+#Residuals for each survey
+moran_azolla_all_points <- data.frame(pond = azolla_data$pond, 
+                             year = azolla_data$year, 
+                             residuals = residuals(azolla_model)) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_azolla_all_points, "Data/Moran Test Data/moran_azolla_all_points.xlsx")
 
 
 ## Vegetation ----------------------------------------------------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-
+# Average residuals by pond
 moran_vegetation <- data.frame(pond = data$pond, 
                            year = data$year, 
                            residuals = residuals(veg_model)) |>
@@ -505,4 +529,14 @@ moran_vegetation <- data.frame(pond = data$pond,
             unmatched = "drop")
 
 write_xlsx(moran_vegetation, "Data/Moran Test Data/moran_vegetation.xlsx")
+
+# Residuals by survey
+moran_vegetation_all_points <- data.frame(pond = data$pond, 
+                           year = data$year, 
+                           residuals = residuals(veg_model)) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_vegetation_all_points, "Data/Moran Test Data/moran_vegetation_all_points.xlsx")
 
