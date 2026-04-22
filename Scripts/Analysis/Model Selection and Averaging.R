@@ -50,11 +50,11 @@ summary(ModelAvgNoAzolla)
 ## Calculate and extract residuals for spatial autocorrelation tests -----------
 model_average_predictions <- predict(ModelAvgNoAzolla)
 model_average_residuals <- df$log_larv_dens - model_average_predictions
-
+df$log_larv_dens[1] - model_average_predictions[1]
 ## Create residuals for spatial autocorrelation test ---------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-
+# Average Residual at each pond
 moran_model_avg_data <- data.frame(pond = df$pond, 
                               year = df$year, 
                               residuals = model_average_residuals) |>
@@ -66,6 +66,16 @@ moran_model_avg_data <- data.frame(pond = df$pond,
 
 write_xlsx(moran_model_avg_data, "Data/Moran Test Data/moran_model_average.xlsx")
 
+
+# Residual for each survey
+moran_model_avg_surveys <- data.frame(pond = df$pond, 
+                              year = df$year, 
+                              residuals = model_average_residuals) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_model_avg_surveys, "Data/Moran Test Data/moran_model_average_all_points.xlsx")
 
 
 
@@ -97,7 +107,7 @@ vif(TopModelNoAzolla)
 ## Spatial Auto Correlation Test for Top Model----------------------------------
 pond_coords <- read_csv("Data/pond_coordinates.csv")
 
-
+# Average residuals at each pond
 moran_top_model <- data.frame(pond = df$pond, 
                               year = df$year, 
                               residuals = residuals(TopModelNoAzolla)) |>
@@ -108,6 +118,16 @@ moran_top_model <- data.frame(pond = df$pond,
             unmatched = "drop")
 
 write_xlsx(moran_top_model, "Data/Moran Test Data/moran_top_model.xlsx")
+
+# Residuals for each survey
+moran_top_model_all_surveys <- data.frame(pond = df$pond, 
+                              year = df$year, 
+                              residuals = residuals(TopModelNoAzolla)) |>
+  left_join(y = pond_coords, 
+            by = join_by(pond),
+            unmatched = "drop")
+
+write_xlsx(moran_top_model_all_surveys, "Data/Moran Test Data/moran_top_model_all_points.xlsx")
 
 
 ## Plot average model ----------------------------------------------------------
