@@ -545,9 +545,9 @@ write_xlsx(moran_vegetation_all_points, "Data/Moran Test Data/moran_vegetation_a
 
 
 
-# Spatial Autocorrelation Correction for Salinity and Azolla ###################
+# Spatial Autocorrelation Corrections for Salinity and Azolla ###################
 
-# Salinity ---------------------------------------------------------------------
+# Salinity Autocorrelation Correction adjusting n in all years------------------
 ### Adjust standard errors of model (mod1)
 n = 132; n.adj = 95
 # Formula for adjustment
@@ -576,9 +576,75 @@ p2.adj <- 2*pt(-abs(t2.adj),df=n.adj-1); round(p2.adj, 4)
 # Old p-value for salinity was 0.013. New p-value is 0.0348. Still significant.
 
 
-# Azolla P-value Correction ----------------------------------------------------
+
+# Salinity Autocorrelation Correction adjusting n in ONLY 2024 -----------------
+### Adjust standard errors of model (mod1)
+n = 132; n.adj = 121.63
+# Formula for adjustment
+se.adj = sqrt(n/n.adj)
+
+# Extract standard errors
+std.errors <- coef(summary(salinity_model))[, 2]
+print(std.errors)
+
+se1.adj = std.errors[1]*se.adj;se1.adj
+se2.adj = std.errors[2]*se.adj; se2.adj
+
+### Calculate adjusted p-values for mod1
+# get parameter estimates
+mod1.ests <- coef(summary(salinity_model))[, 1] ; mod1.ests
+mod1.est1 <- mod1.ests[1]
+mod1.est2 <- mod1.ests[2]
+
+# compute adjusted p-value for intercept
+t1.adj = mod1.est1/se2.adj;
+p1.adj <- 2*pt(-abs(t1.adj),df=n.adj-1); round(p1.adj, 4)
+
+# Adjusted p-value for salinity
+t2.adj = mod1.est2/se2.adj;t2.adj
+p2.adj <- 2*pt(-abs(t2.adj),df=n.adj-1); round(p2.adj, 4)
+# Old p-value for salinity was 0.013. New p-value is 0.0348. Still significant.
+
+
+
+
+
+# Azolla Autocorrelation Correction adjusting n in all years -------------------
 ### Adjust standard errors of model (mod1)
 n = 82; n.adj = 35.9
+# Formula for adjustment
+se.adj = sqrt(n/n.adj)
+
+# Extract standard errors
+std.errors <- coef(summary(azolla_model))[, 2]
+print(std.errors)
+
+se1.adj = std.errors[1]*se.adj;se1.adj
+se2.adj = std.errors[2]*se.adj; se2.adj
+
+### Calculate adjusted p-values for mod1
+# get parameter estimates
+mod1.ests <- coef(summary(azolla_model))[, 1] ; mod1.ests
+mod1.est1 <- mod1.ests[1]
+mod1.est2 <- mod1.ests[2]
+
+# compute adjusted p-value for intercept
+t1.adj = mod1.est1/se2.adj;
+p1.adj <- 2*pt(-abs(t1.adj),df=n.adj-1); round(p1.adj, 4)
+
+# Adjusted p-value for salinity
+t2.adj = mod1.est2/se2.adj;t2.adj
+p2.adj <- 2*pt(-abs(t2.adj),df=n.adj-1); round(p2.adj, 4)
+
+# Azolla now p = 0.147. Was previously p = 0.028. 
+
+
+
+
+
+
+# Azolla Autocorrelation Correction but ONLY 2023 N is altered -----------------
+n = 82; n.adj = 56.7
 # Formula for adjustment
 se.adj = sqrt(n/n.adj)
 
