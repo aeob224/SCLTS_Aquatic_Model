@@ -372,7 +372,7 @@ azolla_plot <- ggplot(data = tidy_azolla, aes(x = azolla, y = .fitted)) +
   geom_boxplot(outliers = F, notch = T) +
   geom_jitter(mapping = aes(x = azolla, y = log_larv_dens), width = 0.1, size = 0.5) +
   theme_classic()+
-  labs(x = "Azolla Presence",
+  labs(x = expression(italic("Azolla")),
        y = "Larval Density (log larvae/"~m^2~")") +
   theme(axis.title = element_text(size = 8),
         axis.text = element_text(size = 8),
@@ -422,18 +422,19 @@ multiPlot <- cowplot::plot_grid(salinity_plot, distance_plot,azolla_plot, veg_pl
                                 label_size = 10)
 multiPlot
 ggsave("Figures/univariate_fits.png", multiPlot, width = 35, height = 25)
-ggsave("Figures/Manuscript Figures/figure_4.tiff", multiPlot,
+ggsave("Figures/figure_4.tiff", multiPlot,
        dpi = 1200,
        width = 190, 
        height = 150,
        units = "mm")
 
 
-ggsave("Figures/Manuscript Figures/figure_4.jpeg", multiPlot,
+ggsave("Figures/figure_4.jpeg", multiPlot,
        dpi = 1200,
        width = 190, 
        height = 150,
        units = "mm")
+
 
 
 ################################################################################
