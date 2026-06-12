@@ -17,7 +17,8 @@ library(readr)
 data <- read_csv("Data/univariate_data.csv") |>
   mutate(azolla = as.factor(azolla),
          vert_pred = as.factor(vert_pred),
-         pond = as.factor(pond))
+         pond = as.factor(pond),
+         year = as.factor(year))
 
 
 dry_pond_data <- read_csv("Data/dry_pond_dataset.csv") |>
